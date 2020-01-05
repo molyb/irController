@@ -1,0 +1,5 @@
+(sym_lib_table
+  (lib (name irController-rescue)(type Legacy)(uri ${KIPRJMOD}/irController-rescue.lib)(options "")(descr ""))
+  (lib (name ESP8266)(type Legacy)(uri ${KIPRJMOD}/ESP8266.lib)(options "")(descr ""))
+  (lib (name originalLibSns)(type Legacy)(uri ${KIPRJMOD}/originalLibSns.lib)(options "")(descr ""))
+)
