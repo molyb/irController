@@ -1,38 +1,5 @@
-EESchema Schematic File Version 2
-LIBS:irController-rescue
-LIBS:power
-LIBS:device
-LIBS:transistors
-LIBS:conn
-LIBS:linear
-LIBS:regul
-LIBS:74xx
-LIBS:cmos4000
-LIBS:adc-dac
-LIBS:memory
-LIBS:xilinx
-LIBS:microcontrollers
-LIBS:dsp
-LIBS:microchip
-LIBS:analog_switches
-LIBS:motorola
-LIBS:texas
-LIBS:intel
-LIBS:audio
-LIBS:interface
-LIBS:digital-audio
-LIBS:philips
-LIBS:display
-LIBS:cypress
-LIBS:siliconi
-LIBS:opto
-LIBS:atmel
-LIBS:contrib
-LIBS:valves
-LIBS:ESP8266
-LIBS:originalLibSns
-LIBS:irController-cache
-EELAYER 25 0
+EESchema Schematic File Version 4
+EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
@@ -47,7 +14,7 @@ Comment3 ""
 Comment4 ""
 $EndDescr
 $Comp
-L GND #PWR01
+L irController-rescue:GND #PWR01
 U 1 1 585A886E
 P 8500 4200
 F 0 "#PWR01" H 8500 3950 50  0001 C CNN
@@ -58,7 +25,7 @@ F 3 "" H 8500 4200 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L R R8
+L irController-rescue:R R8
 U 1 1 585A88C2
 P 8900 3150
 F 0 "R8" V 8980 3150 50  0000 C CNN
@@ -69,7 +36,7 @@ F 3 "" H 8900 3150 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L R R9
+L irController-rescue:R R9
 U 1 1 585A88F7
 P 9200 3150
 F 0 "R9" V 9280 3150 50  0000 C CNN
@@ -80,7 +47,7 @@ F 3 "" H 9200 3150 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L R R10
+L irController-rescue:R R10
 U 1 1 585A8932
 P 9500 3150
 F 0 "R10" V 9580 3150 50  0000 C CNN
@@ -91,7 +58,7 @@ F 3 "" H 9500 3150 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L LED-RESCUE-irController D1
+L irController-rescue:LED-RESCUE-irController D1
 U 1 1 585A983F
 P 8900 2700
 F 0 "D1" H 8900 2800 50  0000 C CNN
@@ -102,7 +69,7 @@ F 3 "" H 8900 2700 50  0000 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L LED-RESCUE-irController D2
+L irController-rescue:LED-RESCUE-irController D2
 U 1 1 585A9888
 P 9200 2700
 F 0 "D2" H 9200 2800 50  0000 C CNN
@@ -113,7 +80,7 @@ F 3 "" H 9200 2700 50  0000 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L LED-RESCUE-irController D3
+L irController-rescue:LED-RESCUE-irController D3
 U 1 1 585A98C9
 P 9500 2700
 F 0 "D3" H 9500 2800 50  0000 C CNN
@@ -124,7 +91,7 @@ F 3 "" H 9500 2700 50  0000 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L R R2
+L irController-rescue:R R2
 U 1 1 585CC316
 P 3650 3500
 F 0 "R2" V 3730 3500 50  0000 C CNN
@@ -135,7 +102,7 @@ F 3 "" H 3650 3500 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L R R3
+L irController-rescue:R R3
 U 1 1 585CC74B
 P 4400 4150
 F 0 "R3" V 4480 4150 50  0000 C CNN
@@ -146,7 +113,7 @@ F 3 "" H 4400 4150 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR02
+L irController-rescue:GND #PWR02
 U 1 1 585CC7B0
 P 4400 4550
 F 0 "#PWR02" H 4400 4300 50  0001 C CNN
@@ -157,7 +124,7 @@ F 3 "" H 4400 4550 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR03
+L irController-rescue:GND #PWR03
 U 1 1 585CC8E5
 P 4950 4150
 F 0 "#PWR03" H 4950 3900 50  0001 C CNN
@@ -168,7 +135,7 @@ F 3 "" H 4950 4150 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L R R6
+L irController-rescue:R R6
 U 1 1 585CCB62
 P 8200 2950
 F 0 "R6" V 8280 2950 50  0000 C CNN
@@ -179,7 +146,7 @@ F 3 "" H 8200 2950 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR04
+L irController-rescue:GND #PWR04
 U 1 1 585CD72A
 P 4700 4700
 F 0 "#PWR04" H 4700 4450 50  0001 C CNN
@@ -190,7 +157,7 @@ F 3 "" H 4700 4700 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR05
+L irController-rescue:GND #PWR05
 U 1 1 585CE08E
 P 7200 4150
 F 0 "#PWR05" H 7200 3900 50  0001 C CNN
@@ -201,7 +168,7 @@ F 3 "" H 7200 4150 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L R R1
+L irController-rescue:R R1
 U 1 1 585CEA7D
 P 3350 3500
 F 0 "R1" V 3430 3500 50  0000 C CNN
@@ -212,7 +179,7 @@ F 3 "" H 3350 3500 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR06
+L irController-rescue:GND #PWR06
 U 1 1 585CEB9A
 P 3350 4800
 F 0 "#PWR06" H 3350 4550 50  0001 C CNN
@@ -223,7 +190,7 @@ F 3 "" H 3350 4800 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L CONN_01X02 P2
+L irController-rescue:CONN_01X02 P2
 U 1 1 585CF068
 P 4050 3550
 F 0 "P2" H 4050 3750 50  0000 C CNN
@@ -235,7 +202,7 @@ F 3 "" H 4050 3550 50  0000 C CNN
 $EndComp
 NoConn ~ 6900 3400
 $Comp
-L USB_OTG-RESCUE-irController P1
+L irController-rescue:USB_OTG-RESCUE-irController P1
 U 1 1 585CF846
 P 1250 3400
 F 0 "P1" H 1575 3275 50  0000 C CNN
@@ -249,7 +216,7 @@ NoConn ~ 1550 3500
 NoConn ~ 1550 3400
 NoConn ~ 1550 3300
 $Comp
-L C C1
+L irController-rescue:C C1
 U 1 1 585CFE45
 P 1900 3550
 F 0 "C1" H 1925 3650 50  0000 L CNN
@@ -260,7 +227,7 @@ F 3 "" H 1900 3550 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L C C2
+L irController-rescue:C C2
 U 1 1 585CFEC2
 P 2900 3550
 F 0 "C2" H 2925 3650 50  0000 L CNN
@@ -271,7 +238,7 @@ F 3 "" H 2900 3550 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR07
+L irController-rescue:GND #PWR07
 U 1 1 585D0879
 P 7800 4900
 F 0 "#PWR07" H 7800 4650 50  0001 C CNN
@@ -282,7 +249,7 @@ F 3 "" H 7800 4900 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR08
+L irController-rescue:GND #PWR08
 U 1 1 585D2DF7
 P 1150 4200
 F 0 "#PWR08" H 1150 3950 50  0001 C CNN
@@ -293,7 +260,7 @@ F 3 "" H 1150 4200 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L ESP-13-WROOM-02 U2
+L irController-rescue:ESP-13-WROOM-02 U2
 U 1 1 585A8532
 P 5950 3500
 F 0 "U2" H 5950 3400 50  0000 C CNN
@@ -304,7 +271,7 @@ F 3 "" H 5850 3500 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L R R5
+L irController-rescue:R R5
 U 1 1 585D6283
 P 7800 2950
 F 0 "R5" V 7880 2950 50  0000 C CNN
@@ -315,7 +282,7 @@ F 3 "" H 7800 2950 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Q_NMOS_GSD Q1
+L irController-rescue:Q_NMOS_GSD Q1
 U 1 1 585D69C7
 P 8800 3600
 F 0 "Q1" H 9100 3650 50  0000 R CNN
@@ -326,7 +293,7 @@ F 3 "" H 8800 3600 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L NJM2845 U1
+L irController-rescue:NJM2845 U1
 U 1 1 585D6ECB
 P 2450 3250
 F 0 "U1" H 2600 3054 50  0000 C CNN
@@ -337,7 +304,7 @@ F 3 "" H 2450 3250 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L PWR_FLAG #FLG09
+L irController-rescue:PWR_FLAG #FLG09
 U 1 1 585D6536
 P 4100 4450
 F 0 "#FLG09" H 4100 4545 50  0001 C CNN
@@ -348,7 +315,7 @@ F 3 "" H 4100 4450 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L C C4
+L irController-rescue:C C4
 U 1 1 585D8BC1
 P 7000 4550
 F 0 "C4" H 7025 4650 50  0000 L CNN
@@ -359,7 +326,7 @@ F 3 "" H 7000 4550 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L R R4
+L irController-rescue:R R4
 U 1 1 585D8CA6
 P 7450 4000
 F 0 "R4" V 7530 4000 50  0000 C CNN
@@ -370,7 +337,7 @@ F 3 "" H 7450 4000 50  0000 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L GND #PWR010
+L irController-rescue:GND #PWR010
 U 1 1 585D8F8A
 P 7000 4900
 F 0 "#PWR010" H 7000 4650 50  0001 C CNN
@@ -381,7 +348,7 @@ F 3 "" H 7000 4900 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L R R7
+L irController-rescue:R R7
 U 1 1 585DAFA2
 P 8500 3950
 F 0 "R7" V 8580 3950 50  0000 C CNN
@@ -392,7 +359,7 @@ F 3 "" H 8500 3950 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Switch_DPST SW1
+L irController-rescue:Switch_DPST SW1
 U 1 1 585F5EC4
 P 3150 4400
 F 0 "SW1" H 3450 4450 50  0000 C CNN
@@ -403,7 +370,7 @@ F 3 "" H 3150 4400 50  0000 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L Switch_DPST SW2
+L irController-rescue:Switch_DPST SW2
 U 1 1 585F657A
 P 7600 4500
 F 0 "SW2" H 7900 4550 50  0000 C CNN
@@ -414,7 +381,7 @@ F 3 "" H 7600 4500 50  0000 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L GNDPWR #PWR011
+L irController-rescue:GNDPWR #PWR011
 U 1 1 58693F63
 P 5950 4700
 F 0 "#PWR011" H 5950 4500 50  0001 C CNN
@@ -425,7 +392,7 @@ F 3 "" H 5950 4650 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GNDPWR #PWR012
+L irController-rescue:GNDPWR #PWR012
 U 1 1 5869416A
 P 8900 4300
 F 0 "#PWR012" H 8900 4100 50  0001 C CNN
@@ -436,7 +403,7 @@ F 3 "" H 8900 4250 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GNDPWR #PWR013
+L irController-rescue:GNDPWR #PWR013
 U 1 1 58694812
 P 1900 3800
 F 0 "#PWR013" H 1900 3600 50  0001 C CNN
@@ -447,7 +414,7 @@ F 3 "" H 1900 3750 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GNDPWR #PWR014
+L irController-rescue:GNDPWR #PWR014
 U 1 1 5869489A
 P 2450 3800
 F 0 "#PWR014" H 2450 3600 50  0001 C CNN
@@ -458,7 +425,7 @@ F 3 "" H 2450 3750 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GNDPWR #PWR015
+L irController-rescue:GNDPWR #PWR015
 U 1 1 586948F0
 P 2900 3800
 F 0 "#PWR015" H 2900 3600 50  0001 C CNN
@@ -469,7 +436,7 @@ F 3 "" H 2900 3750 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR016
+L irController-rescue:GND #PWR016
 U 1 1 586952AB
 P 8450 4750
 F 0 "#PWR016" H 8450 4500 50  0001 C CNN
@@ -480,7 +447,7 @@ F 3 "" H 8450 4750 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GNDPWR #PWR017
+L irController-rescue:GNDPWR #PWR017
 U 1 1 58695301
 P 8750 4750
 F 0 "#PWR017" H 8750 4550 50  0001 C CNN
@@ -493,21 +460,21 @@ $EndComp
 Wire Wire Line
 	8200 3500 8200 3100
 Wire Wire Line
-	6900 3500 8200 3500
+	6900 3500 7000 3500
 Wire Wire Line
 	6900 3300 7000 3300
 Wire Wire Line
-	8900 3300 8900 3400
+	8900 3300 8900 3350
 Wire Wire Line
 	9200 3300 9200 3350
 Wire Wire Line
-	8900 3350 9500 3350
+	8900 3350 9200 3350
 Connection ~ 8900 3350
 Wire Wire Line
 	9500 3350 9500 3300
 Connection ~ 9200 3350
 Wire Wire Line
-	3100 2300 9500 2300
+	3100 2300 7800 2300
 Wire Wire Line
 	8900 2300 8900 2500
 Connection ~ 8200 2300
@@ -518,13 +485,13 @@ Wire Wire Line
 	9500 2300 9500 2500
 Connection ~ 9200 2300
 Wire Wire Line
-	6900 3600 8600 3600
+	6900 3600 8500 3600
 Wire Wire Line
 	6900 3800 7950 3800
 Wire Wire Line
 	6900 3900 7950 3900
 Wire Wire Line
-	2850 3200 4950 3200
+	2850 3200 2900 3200
 Wire Wire Line
 	4800 3200 4800 3300
 Wire Wire Line
@@ -550,7 +517,7 @@ Wire Wire Line
 Wire Wire Line
 	3650 3800 4950 3800
 Wire Wire Line
-	3350 3650 3350 4100
+	3350 3650 3350 3900
 Wire Wire Line
 	4950 3900 3350 3900
 Connection ~ 3350 3900
@@ -570,7 +537,7 @@ Wire Wire Line
 Wire Wire Line
 	5950 4400 5950 4700
 Wire Wire Line
-	4400 4300 4400 4550
+	4400 4300 4400 4450
 Wire Wire Line
 	1150 4000 1550 4000
 Wire Wire Line
@@ -578,12 +545,12 @@ Wire Wire Line
 Wire Wire Line
 	1900 3200 1900 3400
 Wire Wire Line
-	1550 3200 2050 3200
+	1550 3200 1900 3200
 Connection ~ 1900 3200
 Wire Wire Line
-	6900 4000 7300 4000
+	6900 4000 7000 4000
 Wire Wire Line
-	7800 4800 7800 4900
+	7800 4800 7800 4850
 Wire Wire Line
 	2900 3700 2900 3800
 Wire Wire Line
@@ -593,7 +560,7 @@ Wire Wire Line
 Wire Wire Line
 	1900 3700 1900 3800
 Wire Wire Line
-	1150 3800 1150 4200
+	1150 3800 1150 4000
 Connection ~ 1150 4000
 Wire Wire Line
 	2900 3200 2900 3400
@@ -604,12 +571,10 @@ Wire Wire Line
 	4700 4500 4700 4700
 Connection ~ 4700 3200
 Wire Wire Line
-	7200 3200 7200 4150
+	7200 3200 7200 3700
 Wire Wire Line
 	3100 3200 3100 2300
 Connection ~ 3100 3200
-Wire Wire Line
-	8200 2300 8200 2300
 Wire Wire Line
 	8200 2300 8200 2800
 Wire Wire Line
@@ -624,7 +589,7 @@ Wire Wire Line
 	7800 2800 7800 2300
 Connection ~ 7800 2300
 Wire Wire Line
-	7800 3100 7800 4200
+	7800 3100 7800 4000
 Wire Wire Line
 	7800 4000 7600 4000
 Connection ~ 7800 4000
@@ -642,7 +607,7 @@ Wire Wire Line
 Wire Wire Line
 	8750 4600 8750 4750
 $Comp
-L CONN_01X03 P3
+L irController-rescue:CONN_01X03 P3
 U 1 1 585CC283
 P 8150 3900
 F 0 "P3" H 8150 4050 50  0000 C CNN
@@ -653,7 +618,7 @@ F 3 "" H 8150 3900 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR018
+L irController-rescue:GND #PWR018
 U 1 1 586CCD46
 P 7950 4100
 F 0 "#PWR018" H 7950 3850 50  0001 C CNN
@@ -666,7 +631,7 @@ $EndComp
 Wire Wire Line
 	7950 4000 7950 4100
 $Comp
-L IRSNS_GP1UXC41QS U3
+L irController-rescue:IRSNS_GP1UXC41QS U3
 U 1 1 586CFC8A
 P 5000 2550
 F 0 "U3" V 5000 2850 60  0000 C CNN
@@ -677,7 +642,7 @@ F 3 "" H 5100 2350 60  0000 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L GND #PWR019
+L irController-rescue:GND #PWR019
 U 1 1 586D0BF6
 P 4150 3000
 F 0 "#PWR019" H 4150 2750 50  0001 C CNN
@@ -698,7 +663,7 @@ Wire Wire Line
 Wire Wire Line
 	4350 3400 4950 3400
 $Comp
-L C C3
+L irController-rescue:C C3
 U 1 1 585CD19B
 P 4700 4350
 F 0 "C3" H 4725 4450 50  0000 L CNN
@@ -732,4 +697,54 @@ Wire Wire Line
 Wire Wire Line
 	7400 4850 7800 4850
 Connection ~ 7800 4850
+Wire Wire Line
+	8900 3350 8900 3400
+Wire Wire Line
+	9200 3350 9500 3350
+Wire Wire Line
+	8200 2300 8900 2300
+Wire Wire Line
+	8900 2300 9200 2300
+Wire Wire Line
+	9200 2300 9500 2300
+Wire Wire Line
+	4800 3200 4950 3200
+Wire Wire Line
+	7000 3500 8200 3500
+Wire Wire Line
+	7200 3700 7200 4150
+Wire Wire Line
+	3650 3200 4500 3200
+Wire Wire Line
+	3350 3900 3350 4000
+Wire Wire Line
+	3350 3200 3650 3200
+Wire Wire Line
+	1900 3200 2050 3200
+Wire Wire Line
+	1150 4000 1150 4200
+Wire Wire Line
+	2900 3200 3100 3200
+Wire Wire Line
+	4700 3200 4800 3200
+Wire Wire Line
+	3100 3200 3350 3200
+Wire Wire Line
+	4400 4450 4400 4550
+Wire Wire Line
+	7000 4000 7300 4000
+Wire Wire Line
+	7800 2300 8200 2300
+Wire Wire Line
+	7800 4000 7800 4150
+Wire Wire Line
+	8500 3600 8600 3600
+Wire Wire Line
+	4500 3200 4700 3200
+Wire Wire Line
+	3350 4000 3350 4100
+Wire Wire Line
+	7800 4150 7800 4200
+Wire Wire Line
+	7800 4850 7800 4900
 $EndSCHEMATC
