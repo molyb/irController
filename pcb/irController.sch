@@ -476,8 +476,6 @@ Connection ~ 9700 2300
 Wire Wire Line
 	6900 3600 9000 3600
 Wire Wire Line
-	6900 3900 7600 3900
-Wire Wire Line
 	2850 3200 2900 3200
 Wire Wire Line
 	4800 3200 4800 3300
@@ -738,10 +736,6 @@ F 11 "http://uk.rs-online.com/web/p/products/8201434P" H 8800 3000 50  0001 L CN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	8150 4000 7950 4000
-Wire Wire Line
-	7950 4000 7950 3900
-Wire Wire Line
 	8150 3900 8050 3900
 Wire Wire Line
 	8050 3900 8050 3800
@@ -752,8 +746,6 @@ Wire Wire Line
 	8150 2300 9400 2300
 Wire Wire Line
 	7200 3700 7200 4150
-Wire Wire Line
-	6900 3800 7350 3800
 Wire Wire Line
 	7650 3800 8050 3800
 $Comp
@@ -767,19 +759,6 @@ F 3 "" H 7500 3800 50  0000 C CNN
 	1    7500 3800
 	0    1    1    0   
 $EndComp
-$Comp
-L irController-rescue:R R12
-U 1 1 5E13E423
-P 7750 3900
-F 0 "R12" V 7830 3900 50  0000 C CNN
-F 1 "22" V 7750 3900 50  0000 C CNN
-F 2 "Resistor_SMD:R_0603_1608Metric" V 7680 3900 50  0001 C CNN
-F 3 "" H 7750 3900 50  0000 C CNN
-	1    7750 3900
-	0    1    1    0   
-$EndComp
-Wire Wire Line
-	7900 3900 7950 3900
 Wire Wire Line
 	7300 4400 7000 4400
 Connection ~ 7000 4400
@@ -809,4 +788,29 @@ F 3 "" H 3900 3900 50  0000 C CNN
 $EndComp
 Wire Wire Line
 	3750 3900 3350 3900
+Wire Wire Line
+	6900 3800 7150 3800
+$Comp
+L irController-rescue:R R12
+U 1 1 5E13E423
+P 7500 4000
+F 0 "R12" V 7580 4000 50  0000 C CNN
+F 1 "22" V 7500 4000 50  0000 C CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" V 7430 4000 50  0001 C CNN
+F 3 "" H 7500 4000 50  0000 C CNN
+	1    7500 4000
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	7650 4000 8150 4000
+Wire Wire Line
+	7150 4000 7350 4000
+Wire Wire Line
+	7150 3800 7150 4000
+Wire Wire Line
+	6900 3900 7250 3900
+Wire Wire Line
+	7250 3900 7250 3800
+Wire Wire Line
+	7250 3800 7350 3800
 $EndSCHEMATC
