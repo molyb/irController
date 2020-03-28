@@ -1,6 +1,28 @@
 EESchema-LIBRARY Version 2.4
 #encoding utf-8
 #
+# SamacSys_B4B-PH-K-S(LF)(SN)
+#
+DEF SamacSys_B4B-PH-K-S(LF)(SN) J 0 30 Y Y 1 F N
+F0 "J" 650 300 50 H V L CNN
+F1 "SamacSys_B4B-PH-K-S(LF)(SN)" 650 200 50 H V L CNN
+F2 "SHDR4W60P0X200_1X4_990X450X600P" 650 100 50 H I L CNN
+F3 "http://docs-emea.rs-online.com/webdocs/1347/0900766b81347511.pdf" 650 0 50 H I L CNN
+F4 "PH-2.0mm Header top entry 4 way JST PH Series, Series Number B4B, 2mm Pitch 4 Way 1 Row Straight PCB Header, Through Hole Termination, 2A" 650 -100 50 H I L CNN "Description"
+F5 "6" 650 -200 50 H I L CNN "Height"
+F6 "JST (JAPAN SOLDERLESS TERMINALS)" 650 -300 50 H I L CNN "Manufacturer_Name"
+F7 "B4B-PH-K-S(LF)(SN)" 650 -400 50 H I L CNN "Manufacturer_Part_Number"
+F8 "8201434P" 650 -700 50 H I L CNN "RS Part Number"
+F9 "http://uk.rs-online.com/web/p/products/8201434P" 650 -800 50 H I L CNN "RS Price/Stock"
+DRAW
+P 5 0 1 6 200 100 600 100 600 -400 200 -400 200 100 N
+X 1 1 0 0 200 R 50 50 0 0 U
+X 2 2 0 -100 200 R 50 50 0 0 U
+X 3 3 0 -200 200 R 50 50 0 0 U
+X 4 4 0 -300 200 R 50 50 0 0 U
+ENDDRAW
+ENDDEF
+#
 # irController-rescue_C
 #
 DEF irController-rescue_C C 0 10 N Y 1 F N
@@ -38,30 +60,6 @@ S -50 55 10 45 0 1 0 N
 S -50 100 50 -100 0 1 0 N
 X P1 1 -200 50 150 R 50 50 1 1 P
 X P2 2 -200 -50 150 R 50 50 1 1 P
-ENDDRAW
-ENDDEF
-#
-# irController-rescue_CONN_01X03
-#
-DEF irController-rescue_CONN_01X03 P 0 40 Y N 1 F N
-F0 "P" 0 200 50 H V C CNN
-F1 "irController-rescue_CONN_01X03" 100 0 50 V V C CNN
-F2 "" 0 0 50 H V C CNN
-F3 "" 0 0 50 H V C CNN
-$FPLIST
- Pin_Header_Straight_1X03
- Pin_Header_Angled_1X03
- Socket_Strip_Straight_1X03
- Socket_Strip_Angled_1X03
-$ENDFPLIST
-DRAW
-S -50 -95 10 -105 0 1 0 N
-S -50 5 10 -5 0 1 0 N
-S -50 105 10 95 0 1 0 N
-S -50 150 50 -150 0 1 0 N
-X P1 1 -200 100 150 R 50 50 1 1 P
-X P2 2 -200 0 150 R 50 50 1 1 P
-X P3 3 -200 -100 150 R 50 50 1 1 P
 ENDDRAW
 ENDDEF
 #
