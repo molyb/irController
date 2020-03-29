@@ -3,4 +3,5 @@
   (lib (name TO-252-3)(type KiCad)(uri ${KIPRJMOD}/TO-252-3.pretty)(options "")(descr ""))
   (lib (name OriginalLibSw)(type KiCad)(uri ${KIPRJMOD}/originalLibSw.pretty)(options "")(descr ""))
   (lib (name OriginalLibConn)(type KiCad)(uri ${KIPRJMOD}/originalLibConn.pretty)(options "")(descr ""))
+  (lib (name SamacSys)(type KiCad)(uri ${KIPRJMOD}/kicad-symbols/SamacSys_Parts.pretty)(options "")(descr ""))
 )

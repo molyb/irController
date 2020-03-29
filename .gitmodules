@@ -1,0 +1,3 @@
+[submodule "pcb/kicad-symbols"]
+	path = pcb/kicad-symbols
+	url = https://github.com/molyb/kicad-symbols
