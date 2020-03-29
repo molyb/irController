@@ -189,17 +189,6 @@ F 3 "" H 3350 4800 50  0000 C CNN
 	1    3350 4800
 	1    0    0    -1  
 $EndComp
-$Comp
-L irController-rescue:CONN_01X02 P2
-U 1 1 585CF068
-P 4050 3550
-F 0 "P2" H 4050 3750 50  0000 C CNN
-F 1 "GPIO_USER" V 4150 3550 50  0000 C CNN
-F 2 "Socket_Strips:Socket_Strip_Straight_1x02" H 4050 3550 50  0001 C CNN
-F 3 "" H 4050 3550 50  0000 C CNN
-	1    4050 3550
-	-1   0    0    1   
-$EndComp
 NoConn ~ 6900 3400
 $Comp
 L irController-rescue:USB_OTG-RESCUE-irController P1
@@ -463,8 +452,6 @@ Wire Wire Line
 	10000 3350 10000 3300
 Connection ~ 9700 3350
 Wire Wire Line
-	3100 2300 7800 2300
-Wire Wire Line
 	9400 2300 9400 2500
 Connection ~ 8000 2300
 Wire Wire Line
@@ -512,10 +499,6 @@ Connection ~ 3350 3200
 Wire Wire Line
 	3650 3200 3650 3350
 Wire Wire Line
-	4250 3500 4950 3500
-Wire Wire Line
-	4950 3600 4250 3600
-Wire Wire Line
 	4400 4000 4400 3700
 Wire Wire Line
 	4400 3700 4950 3700
@@ -558,7 +541,7 @@ Connection ~ 4700 3200
 Wire Wire Line
 	7200 3200 7200 3700
 Wire Wire Line
-	3100 3200 3100 2300
+	3100 3200 3100 2900
 Connection ~ 3100 3200
 Wire Wire Line
 	8000 2300 8000 2800
@@ -571,7 +554,6 @@ Wire Wire Line
 	7000 5000 7000 5200
 Wire Wire Line
 	7800 2800 7800 2300
-Connection ~ 7800 2300
 Wire Wire Line
 	7800 3100 7800 4400
 Wire Wire Line
@@ -684,8 +666,6 @@ Wire Wire Line
 	4800 3200 4950 3200
 Wire Wire Line
 	7000 3500 8000 3500
-Wire Wire Line
-	3650 3200 4500 3200
 Wire Wire Line
 	3350 3900 3350 4000
 Wire Wire Line
@@ -813,4 +793,231 @@ Wire Wire Line
 	7250 3900 7250 3800
 Wire Wire Line
 	7250 3800 7350 3800
+$Comp
+L SamacSys:ADT7410TRZ IC1
+U 1 1 5E806B94
+P 4550 1600
+F 0 "IC1" H 5050 1865 50  0000 C CNN
+F 1 "ADT7410TRZ" H 5050 1774 50  0000 C CNN
+F 2 "SOIC127P600X175-8N" H 5400 1700 50  0001 L CNN
+F 3 "http://componentsearchengine.com/Datasheets/3/ADT7410TRZ.pdf" H 5400 1600 50  0001 L CNN
+F 4 "I2C Temperature Sensor" H 5400 1500 50  0001 L CNN "Description"
+F 5 "1.75" H 5400 1400 50  0001 L CNN "Height"
+F 6 "Analog Devices" H 5400 1300 50  0001 L CNN "Manufacturer_Name"
+F 7 "ADT7410TRZ" H 5400 1200 50  0001 L CNN "Manufacturer_Part_Number"
+F 8 "584-ADT7410TRZ" H 5400 1100 50  0001 L CNN "Mouser Part Number"
+F 9 "https://www.mouser.com/Search/Refine.aspx?Keyword=584-ADT7410TRZ" H 5400 1000 50  0001 L CNN "Mouser Price/Stock"
+F 10 "7591890P" H 5400 900 50  0001 L CNN "RS Part Number"
+F 11 "http://uk.rs-online.com/web/p/products/7591890P" H 5400 800 50  0001 L CNN "RS Price/Stock"
+	1    4550 1600
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5550 1700 5950 1700
+Wire Wire Line
+	3650 3200 4500 3200
+Wire Wire Line
+	3850 1600 3850 3600
+Wire Wire Line
+	3850 3600 4950 3600
+Wire Wire Line
+	3950 1700 3950 3500
+Wire Wire Line
+	3950 3500 4950 3500
+$Comp
+L power:+3V3 #PWR0101
+U 1 1 5E82A6D6
+P 3100 2900
+F 0 "#PWR0101" H 3100 2750 50  0001 C CNN
+F 1 "+3V3" H 3115 3073 50  0000 C CNN
+F 2 "" H 3100 2900 50  0001 C CNN
+F 3 "" H 3100 2900 50  0001 C CNN
+	1    3100 2900
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:+3V3 #PWR0102
+U 1 1 5E82BE3B
+P 7800 2050
+F 0 "#PWR0102" H 7800 1900 50  0001 C CNN
+F 1 "+3V3" H 7815 2223 50  0000 C CNN
+F 2 "" H 7800 2050 50  0001 C CNN
+F 3 "" H 7800 2050 50  0001 C CNN
+	1    7800 2050
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:+3V3 #PWR0103
+U 1 1 5E82C6A0
+P 6000 900
+F 0 "#PWR0103" H 6000 750 50  0001 C CNN
+F 1 "+3V3" H 6015 1073 50  0000 C CNN
+F 2 "" H 6000 900 50  0001 C CNN
+F 3 "" H 6000 900 50  0001 C CNN
+	1    6000 900 
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	7800 2050 7800 2300
+Connection ~ 7800 2300
+$Comp
+L irController-rescue:GND #PWR0104
+U 1 1 5E835B5C
+P 5950 2000
+F 0 "#PWR0104" H 5950 1750 50  0001 C CNN
+F 1 "GND" H 5950 1850 50  0000 C CNN
+F 2 "" H 5950 2000 50  0000 C CNN
+F 3 "" H 5950 2000 50  0000 C CNN
+	1    5950 2000
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5950 1700 5950 1950
+$Comp
+L irController-rescue:C C5
+U 1 1 5E8551FE
+P 6250 1750
+F 0 "C5" H 6275 1850 50  0000 L CNN
+F 1 "0.1u" H 6275 1650 50  0000 L CNN
+F 2 "Capacitors_SMD:C_0603" H 6288 1600 50  0001 C CNN
+F 3 "" H 6250 1750 50  0000 C CNN
+	1    6250 1750
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	6250 1900 6250 1950
+Wire Wire Line
+	6250 1950 5950 1950
+Connection ~ 5950 1950
+Wire Wire Line
+	5950 1950 5950 2000
+Wire Wire Line
+	5550 1600 6000 1600
+Wire Wire Line
+	6000 900  6000 1000
+Connection ~ 6000 1600
+Wire Wire Line
+	6000 1600 6250 1600
+$Comp
+L irController-rescue:GND #PWR0105
+U 1 1 5E873BF2
+P 4250 2100
+F 0 "#PWR0105" H 4250 1850 50  0001 C CNN
+F 1 "GND" H 4250 1950 50  0000 C CNN
+F 2 "" H 4250 2100 50  0000 C CNN
+F 3 "" H 4250 2100 50  0000 C CNN
+	1    4250 2100
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4550 1800 4250 1800
+Wire Wire Line
+	4250 1800 4250 1900
+Wire Wire Line
+	4550 1900 4250 1900
+Connection ~ 4250 1900
+Wire Wire Line
+	4250 1900 4250 2100
+Text Notes 4500 1250 0    50   ~ 0
+I2C Bus Address Options\nA0: L\nA1: L\naddress: 0x48
+Connection ~ 4250 1700
+Connection ~ 4000 1600
+Wire Wire Line
+	4250 1700 3950 1700
+Wire Wire Line
+	4550 1700 4250 1700
+Wire Wire Line
+	4000 1600 3850 1600
+Wire Wire Line
+	4550 1600 4000 1600
+Wire Wire Line
+	4000 1100 4000 1200
+Connection ~ 4000 1100
+Wire Wire Line
+	4250 1100 4250 1200
+Wire Wire Line
+	4000 1100 4250 1100
+Wire Wire Line
+	4000 1000 4000 1100
+$Comp
+L power:+3V3 #PWR0106
+U 1 1 5E84A991
+P 4000 1000
+F 0 "#PWR0106" H 4000 850 50  0001 C CNN
+F 1 "+3V3" H 4015 1173 50  0000 C CNN
+F 2 "" H 4000 1000 50  0001 C CNN
+F 3 "" H 4000 1000 50  0001 C CNN
+	1    4000 1000
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4250 1500 4250 1700
+Wire Wire Line
+	4000 1500 4000 1600
+$Comp
+L irController-rescue:R R15
+U 1 1 5E840B76
+P 4250 1350
+F 0 "R15" V 4330 1350 50  0000 C CNN
+F 1 "10k" V 4250 1350 50  0000 C CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" V 4180 1350 50  0001 C CNN
+F 3 "" H 4250 1350 50  0000 C CNN
+	1    4250 1350
+	1    0    0    -1  
+$EndComp
+$Comp
+L irController-rescue:R R14
+U 1 1 5E83AB10
+P 4000 1350
+F 0 "R14" V 4080 1350 50  0000 C CNN
+F 1 "10k" V 4000 1350 50  0000 C CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" V 3930 1350 50  0001 C CNN
+F 3 "" H 4000 1350 50  0000 C CNN
+	1    4000 1350
+	1    0    0    -1  
+$EndComp
+$Comp
+L irController-rescue:R R16
+U 1 1 5E893838
+P 5600 1300
+F 0 "R16" V 5680 1300 50  0000 C CNN
+F 1 "10k" V 5600 1300 50  0000 C CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" V 5530 1300 50  0001 C CNN
+F 3 "" H 5600 1300 50  0000 C CNN
+	1    5600 1300
+	1    0    0    -1  
+$EndComp
+$Comp
+L irController-rescue:R R17
+U 1 1 5E893E34
+P 5800 1300
+F 0 "R17" V 5880 1300 50  0000 C CNN
+F 1 "10k" V 5800 1300 50  0000 C CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" V 5730 1300 50  0001 C CNN
+F 3 "" H 5800 1300 50  0000 C CNN
+	1    5800 1300
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	6000 1000 5600 1000
+Wire Wire Line
+	5600 1000 5600 1150
+Connection ~ 6000 1000
+Wire Wire Line
+	6000 1000 6000 1100
+Wire Wire Line
+	6000 1100 5800 1100
+Wire Wire Line
+	5800 1100 5800 1150
+Connection ~ 6000 1100
+Wire Wire Line
+	6000 1100 6000 1600
+Wire Wire Line
+	5600 1450 5600 1800
+Wire Wire Line
+	5600 1800 5550 1800
+Wire Wire Line
+	5550 1900 5800 1900
+Wire Wire Line
+	5800 1900 5800 1450
 $EndSCHEMATC
