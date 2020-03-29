@@ -251,12 +251,12 @@ $EndComp
 $Comp
 L irController-rescue:R R5
 U 1 1 585D6283
-P 7800 2950
-F 0 "R5" V 7880 2950 50  0000 C CNN
-F 1 "10k" V 7800 2950 50  0000 C CNN
-F 2 "Resistor_SMD:R_0603_1608Metric" V 7730 2950 50  0001 C CNN
-F 3 "" H 7800 2950 50  0000 C CNN
-	1    7800 2950
+P 7800 4250
+F 0 "R5" V 7880 4250 50  0000 C CNN
+F 1 "1k" V 7800 4250 50  0000 C CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" V 7730 4250 50  0001 C CNN
+F 3 "" H 7800 4250 50  0000 C CNN
+	1    7800 4250
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -302,17 +302,6 @@ F 2 "Capacitors_SMD:C_0603" H 7038 4700 50  0001 C CNN
 F 3 "" H 7000 4850 50  0000 C CNN
 	1    7000 4850
 	1    0    0    -1  
-$EndComp
-$Comp
-L irController-rescue:R R4
-U 1 1 585D8CA6
-P 7450 4400
-F 0 "R4" V 7530 4400 50  0000 C CNN
-F 1 "10k" V 7450 4400 50  0000 C CNN
-F 2 "Resistor_SMD:R_0603_1608Metric" V 7380 4400 50  0001 C CNN
-F 3 "" H 7450 4400 50  0000 C CNN
-	1    7450 4400
-	0    1    1    0   
 $EndComp
 $Comp
 L irController-rescue:GND #PWR010
@@ -438,10 +427,6 @@ $EndComp
 Wire Wire Line
 	8000 3500 8000 3100
 Wire Wire Line
-	6900 3500 7000 3500
-Wire Wire Line
-	6900 3300 7000 3300
-Wire Wire Line
 	9400 3300 9400 3350
 Wire Wire Line
 	9700 3300 9700 3350
@@ -453,7 +438,6 @@ Wire Wire Line
 Connection ~ 9700 3350
 Wire Wire Line
 	9400 2300 9400 2500
-Connection ~ 8000 2300
 Wire Wire Line
 	9700 2300 9700 2500
 Connection ~ 9400 2300
@@ -475,9 +459,6 @@ Wire Wire Line
 	9700 3000 9700 2900
 Wire Wire Line
 	10000 2900 10000 3000
-Wire Wire Line
-	7000 3300 7000 3500
-Connection ~ 7000 3500
 Wire Wire Line
 	7200 3200 6900 3200
 Wire Wire Line
@@ -516,8 +497,6 @@ Wire Wire Line
 	1550 3200 1900 3200
 Connection ~ 1900 3200
 Wire Wire Line
-	6900 4000 7000 4000
-Wire Wire Line
 	7800 5200 7800 5250
 Wire Wire Line
 	2900 3700 2900 3800
@@ -549,16 +528,7 @@ Wire Wire Line
 	4100 4450 4400 4450
 Connection ~ 4400 4450
 Wire Wire Line
-	7000 4000 7000 4400
-Wire Wire Line
 	7000 5000 7000 5200
-Wire Wire Line
-	7800 2800 7800 2300
-Wire Wire Line
-	7800 3100 7800 4400
-Wire Wire Line
-	7800 4400 7600 4400
-Connection ~ 7800 4400
 Wire Wire Line
 	9000 3800 9000 3600
 Connection ~ 9000 3600
@@ -665,8 +635,6 @@ Wire Wire Line
 Wire Wire Line
 	4800 3200 4950 3200
 Wire Wire Line
-	7000 3500 8000 3500
-Wire Wire Line
 	3350 3900 3350 4000
 Wire Wire Line
 	3350 3200 3650 3200
@@ -682,10 +650,6 @@ Wire Wire Line
 	3100 3200 3350 3200
 Wire Wire Line
 	4400 4450 4400 4550
-Wire Wire Line
-	7800 2300 8000 2300
-Wire Wire Line
-	7800 4400 7800 4550
 Wire Wire Line
 	9000 3600 9100 3600
 Wire Wire Line
@@ -739,11 +703,6 @@ F 3 "" H 7500 3800 50  0000 C CNN
 	1    7500 3800
 	0    1    1    0   
 $EndComp
-Wire Wire Line
-	7300 4400 7000 4400
-Connection ~ 7000 4400
-Wire Wire Line
-	7000 4400 7000 4700
 $Comp
 L irController-rescue:ESP-13-WROOM-02 U2
 U 1 1 585A8532
@@ -838,12 +797,12 @@ $EndComp
 $Comp
 L power:+3V3 #PWR0102
 U 1 1 5E82BE3B
-P 7800 2050
-F 0 "#PWR0102" H 7800 1900 50  0001 C CNN
-F 1 "+3V3" H 7815 2223 50  0000 C CNN
-F 2 "" H 7800 2050 50  0001 C CNN
-F 3 "" H 7800 2050 50  0001 C CNN
-	1    7800 2050
+P 8000 2050
+F 0 "#PWR0102" H 8000 1900 50  0001 C CNN
+F 1 "+3V3" H 8015 2223 50  0000 C CNN
+F 2 "" H 8000 2050 50  0001 C CNN
+F 3 "" H 8000 2050 50  0001 C CNN
+	1    8000 2050
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -858,8 +817,7 @@ F 3 "" H 6000 900 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	7800 2050 7800 2300
-Connection ~ 7800 2300
+	8000 2050 8000 2300
 $Comp
 L irController-rescue:GND #PWR0104
 U 1 1 5E835B5C
@@ -1020,4 +978,40 @@ Wire Wire Line
 	5550 1900 5800 1900
 Wire Wire Line
 	5800 1900 5800 1450
+NoConn ~ 6900 4000
+$Comp
+L irController-rescue:R R4
+U 1 1 5E811C8F
+P 7450 3300
+F 0 "R4" V 7530 3300 50  0000 C CNN
+F 1 "1k" V 7450 3300 50  0000 C CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" V 7380 3300 50  0001 C CNN
+F 3 "" H 7450 3300 50  0000 C CNN
+	1    7450 3300
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	6900 3300 7300 3300
+Wire Wire Line
+	7000 4700 7000 3500
+Wire Wire Line
+	6900 3500 7000 3500
+Connection ~ 7000 3500
+Wire Wire Line
+	7800 4400 7800 4550
+Wire Wire Line
+	7000 3500 7650 3500
+Wire Wire Line
+	7800 4100 7800 3500
+Connection ~ 7800 3500
+Wire Wire Line
+	7800 3500 8000 3500
+Wire Wire Line
+	7600 3300 7650 3300
+Wire Wire Line
+	7650 3300 7650 3500
+Connection ~ 7650 3500
+Wire Wire Line
+	7650 3500 7800 3500
+Connection ~ 8000 2300
 $EndSCHEMATC
