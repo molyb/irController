@@ -440,7 +440,6 @@ Wire Wire Line
 	9400 2300 9400 2500
 Wire Wire Line
 	9700 2300 9700 2500
-Connection ~ 9400 2300
 Wire Wire Line
 	10000 2300 10000 2500
 Connection ~ 9700 2300
@@ -494,7 +493,7 @@ Wire Wire Line
 Wire Wire Line
 	1900 3200 1900 3400
 Wire Wire Line
-	1550 3200 1900 3200
+	1550 3200 1700 3200
 Connection ~ 1900 3200
 Wire Wire Line
 	7800 5200 7800 5250
@@ -685,9 +684,6 @@ Wire Wire Line
 	8050 3900 8050 3800
 Wire Wire Line
 	8150 3800 8150 2300
-Connection ~ 8150 2300
-Wire Wire Line
-	8150 2300 9400 2300
 Wire Wire Line
 	7200 3700 7200 4150
 Wire Wire Line
@@ -758,7 +754,7 @@ U 1 1 5E806B94
 P 4550 1600
 F 0 "IC1" H 5050 1865 50  0000 C CNN
 F 1 "ADT7410TRZ" H 5050 1774 50  0000 C CNN
-F 2 "SOIC127P600X175-8N" H 5400 1700 50  0001 L CNN
+F 2 "SamacSys:SOIC127P600X175-8N" H 5400 1700 50  0001 L CNN
 F 3 "http://componentsearchengine.com/Datasheets/3/ADT7410TRZ.pdf" H 5400 1600 50  0001 L CNN
 F 4 "I2C Temperature Sensor" H 5400 1500 50  0001 L CNN "Description"
 F 5 "1.75" H 5400 1400 50  0001 L CNN "Height"
@@ -1014,4 +1010,64 @@ Connection ~ 7650 3500
 Wire Wire Line
 	7650 3500 7800 3500
 Connection ~ 8000 2300
+$Comp
+L Jumper:SolderJumper_3_Open JP1
+U 1 1 5E8354F2
+P 9400 1800
+F 0 "JP1" H 9400 2005 50  0000 C CNN
+F 1 "SolderJumper_3_Open" H 9400 1914 50  0000 C CNN
+F 2 "Jumper:SolderJumper-3_P1.3mm_Open_RoundedPad1.0x1.5mm_NumberLabels" H 9400 1800 50  0001 C CNN
+F 3 "~" H 9400 1800 50  0001 C CNN
+	1    9400 1800
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:+5V #PWR0107
+U 1 1 5E83656A
+P 1700 3050
+F 0 "#PWR0107" H 1700 2900 50  0001 C CNN
+F 1 "+5V" H 1715 3223 50  0000 C CNN
+F 2 "" H 1700 3050 50  0001 C CNN
+F 3 "" H 1700 3050 50  0001 C CNN
+	1    1700 3050
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1700 3050 1700 3200
+Connection ~ 1700 3200
+Wire Wire Line
+	1700 3200 1900 3200
+Wire Wire Line
+	9400 1950 9400 2300
+Connection ~ 9400 2300
+Wire Wire Line
+	9200 1800 8800 1800
+Wire Wire Line
+	8800 1800 8800 1450
+$Comp
+L power:+3V3 #PWR0108
+U 1 1 5E84B46E
+P 8800 1450
+F 0 "#PWR0108" H 8800 1300 50  0001 C CNN
+F 1 "+3V3" H 8815 1623 50  0000 C CNN
+F 2 "" H 8800 1450 50  0001 C CNN
+F 3 "" H 8800 1450 50  0001 C CNN
+	1    8800 1450
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:+5V #PWR0109
+U 1 1 5E84B8AF
+P 10050 1400
+F 0 "#PWR0109" H 10050 1250 50  0001 C CNN
+F 1 "+5V" H 10065 1573 50  0000 C CNN
+F 2 "" H 10050 1400 50  0001 C CNN
+F 3 "" H 10050 1400 50  0001 C CNN
+	1    10050 1400
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	9600 1800 10050 1800
+Wire Wire Line
+	10050 1800 10050 1400
 $EndSCHEMATC
