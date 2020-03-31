@@ -1,6 +1,34 @@
 EESchema-LIBRARY Version 2.4
 #encoding utf-8
 #
+# SamacSys_ADT7410TRZ
+#
+DEF SamacSys_ADT7410TRZ IC 0 30 Y Y 1 F N
+F0 "IC" 850 300 50 H V L CNN
+F1 "SamacSys_ADT7410TRZ" 850 200 50 H V L CNN
+F2 "SOIC127P600X175-8N" 850 100 50 H I L CNN
+F3 "http://componentsearchengine.com/Datasheets/3/ADT7410TRZ.pdf" 850 0 50 H I L CNN
+F4 "I2C Temperature Sensor" 850 -100 50 H I L CNN "Description"
+F5 "1.75" 850 -200 50 H I L CNN "Height"
+F6 "Analog Devices" 850 -300 50 H I L CNN "Manufacturer_Name"
+F7 "ADT7410TRZ" 850 -400 50 H I L CNN "Manufacturer_Part_Number"
+F8 "584-ADT7410TRZ" 850 -500 50 H I L CNN "Mouser Part Number"
+F9 "https://www.mouser.com/Search/Refine.aspx?Keyword=584-ADT7410TRZ" 850 -600 50 H I L CNN "Mouser Price/Stock"
+F10 "7591890P" 850 -700 50 H I L CNN "RS Part Number"
+F11 "http://uk.rs-online.com/web/p/products/7591890P" 850 -800 50 H I L CNN "RS Price/Stock"
+DRAW
+P 5 0 1 6 200 100 800 100 800 -400 200 -400 200 100 N
+X SCL 1 0 0 200 R 50 50 0 0 C
+X SDA 2 0 -100 200 R 50 50 0 0 C
+X A0 3 0 -200 200 R 50 50 0 0 P
+X A1 4 0 -300 200 R 50 50 0 0 P
+X INT 5 1000 -300 200 L 50 50 0 0 C
+X CT 6 1000 -200 200 L 50 50 0 0 C
+X GND 7 1000 -100 200 L 50 50 0 0 W
+X VDD 8 1000 0 200 L 50 50 0 0 W
+ENDDRAW
+ENDDEF
+#
 # SamacSys_B4B-PH-K-S(LF)(SN)
 #
 DEF SamacSys_B4B-PH-K-S(LF)(SN) J 0 30 Y Y 1 F N
@@ -38,28 +66,6 @@ P 2 0 1 20 -80 -30 80 -30 N
 P 2 0 1 20 -80 30 80 30 N
 X ~ 1 0 150 110 D 50 50 1 1 P
 X ~ 2 0 -150 110 U 50 50 1 1 P
-ENDDRAW
-ENDDEF
-#
-# irController-rescue_CONN_01X02
-#
-DEF irController-rescue_CONN_01X02 P 0 40 Y N 1 F N
-F0 "P" 0 150 50 H V C CNN
-F1 "irController-rescue_CONN_01X02" 100 0 50 V V C CNN
-F2 "" 0 0 50 H V C CNN
-F3 "" 0 0 50 H V C CNN
-$FPLIST
- Pin_Header_Straight_1X02
- Pin_Header_Angled_1X02
- Socket_Strip_Straight_1X02
- Socket_Strip_Angled_1X02
-$ENDFPLIST
-DRAW
-S -50 -45 10 -55 0 1 0 N
-S -50 55 10 45 0 1 0 N
-S -50 100 50 -100 0 1 0 N
-X P1 1 -200 50 150 R 50 50 1 1 P
-X P2 2 -200 -50 150 R 50 50 1 1 P
 ENDDRAW
 ENDDEF
 #
@@ -294,6 +300,37 @@ X D+ 3 0 -300 150 U 50 50 1 1 P
 X ID 4 100 -300 150 U 50 50 1 1 W
 X GND 5 200 -300 150 U 50 50 1 1 W
 X shield 6 400 100 150 L 50 50 1 1 P
+ENDDRAW
+ENDDEF
+#
+# power_+3V3
+#
+DEF power_+3V3 #PWR 0 0 Y Y 1 F P
+F0 "#PWR" 0 -150 50 H I C CNN
+F1 "power_+3V3" 0 140 50 H V C CNN
+F2 "" 0 0 50 H I C CNN
+F3 "" 0 0 50 H I C CNN
+ALIAS +3.3V
+DRAW
+P 2 0 1 0 -30 50 0 100 N
+P 2 0 1 0 0 0 0 100 N
+P 2 0 1 0 0 100 30 50 N
+X +3V3 1 0 0 0 U 50 50 1 1 W N
+ENDDRAW
+ENDDEF
+#
+# power_+5V
+#
+DEF power_+5V #PWR 0 0 Y Y 1 F P
+F0 "#PWR" 0 -150 50 H I C CNN
+F1 "power_+5V" 0 140 50 H V C CNN
+F2 "" 0 0 50 H I C CNN
+F3 "" 0 0 50 H I C CNN
+DRAW
+P 2 0 1 0 -30 50 0 100 N
+P 2 0 1 0 0 0 0 100 N
+P 2 0 1 0 0 100 30 50 N
+X +5V 1 0 0 0 U 50 50 1 1 W N
 ENDDRAW
 ENDDEF
 #
