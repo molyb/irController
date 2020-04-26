@@ -508,7 +508,7 @@ L irController-rescue:IRSNS_GP1UXC41QS U3
 U 1 1 586CFC8A
 P 5600 1750
 F 0 "U3" H 5600 2050 60  0000 C CNN
-F 1 "IRSNS_GP1UXC41QS" H 6200 2050 60  0000 C CNN
+F 1 "IRSNS_GP1UXC41QS" H 5600 2150 60  0000 C CNN
 F 2 "Socket_Strips:Socket_Strip_Straight_1x03" H 5700 1550 60  0001 C CNN
 F 3 "" H 5700 1550 60  0000 C CNN
 	1    5600 1750
@@ -1035,9 +1035,9 @@ F 3 "" H 6100 2000 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	4950 3500 4900 3500
+	4950 3500 4650 3500
 Wire Wire Line
-	4900 3500 4900 2700
+	4650 3500 4650 2700
 Wire Wire Line
 	5700 2250 5900 2250
 Wire Wire Line
@@ -1045,8 +1045,7 @@ Wire Wire Line
 Wire Wire Line
 	5500 2150 5500 2700
 Wire Wire Line
-	4900 2700 5500 2700
-NoConn ~ 4950 3600
+	4650 2700 5500 2700
 $Comp
 L Device:R R18
 U 1 1 5EC61EA7
@@ -1076,4 +1075,76 @@ Wire Wire Line
 	8300 5100 8300 3900
 Wire Wire Line
 	6900 3900 8300 3900
+$Comp
+L Sensor:DHT11 U4
+U 1 1 5EA7525E
+P 6850 1800
+F 0 "U4" H 6606 1846 50  0000 R CNN
+F 1 "DHT11" H 6606 1755 50  0000 R CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical" H 6850 1400 50  0001 C CNN
+F 3 "http://akizukidenshi.com/download/ds/aosong/DHT11.pdf" H 7000 2050 50  0001 C CNN
+	1    6850 1800
+	1    0    0    -1  
+$EndComp
+$Comp
+L irController-rescue:GND #PWR022
+U 1 1 5EA765C4
+P 6850 2250
+F 0 "#PWR022" H 6850 2000 50  0001 C CNN
+F 1 "GND" H 6850 2100 50  0000 C CNN
+F 2 "" H 6850 2250 50  0000 C CNN
+F 3 "" H 6850 2250 50  0000 C CNN
+	1    6850 2250
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	6850 2250 6850 2100
+$Comp
+L power:+3V3 #PWR021
+U 1 1 5EA7C4EC
+P 6850 1300
+F 0 "#PWR021" H 6850 1150 50  0001 C CNN
+F 1 "+3V3" H 6865 1473 50  0000 C CNN
+F 2 "" H 6850 1300 50  0001 C CNN
+F 3 "" H 6850 1300 50  0001 C CNN
+	1    6850 1300
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	6850 1300 6850 1400
+$Comp
+L Device:R R19
+U 1 1 5EA82532
+P 7300 1600
+F 0 "R19" H 7370 1646 50  0000 L CNN
+F 1 "10k" H 7370 1555 50  0000 L CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" V 7230 1600 50  0001 C CNN
+F 3 "~" H 7300 1600 50  0001 C CNN
+	1    7300 1600
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	6850 1400 7300 1400
+Connection ~ 6850 1400
+Wire Wire Line
+	6850 1400 6850 1500
+Wire Wire Line
+	7150 1800 7250 1800
+Wire Wire Line
+	7250 1800 7250 2800
+Wire Wire Line
+	7250 2800 4850 2800
+Wire Wire Line
+	4850 2800 4850 3600
+Wire Wire Line
+	4850 3600 4950 3600
+Connection ~ 7250 1800
+Wire Wire Line
+	7250 1800 7300 1800
+Wire Wire Line
+	7300 1800 7300 1750
+Wire Wire Line
+	7300 1450 7300 1400
+Text Notes 5250 1200 0    50   ~ 0
+GP1UXC41QS is not require \na pull-up resistor.\nFor alternative IC.
 $EndSCHEMATC
