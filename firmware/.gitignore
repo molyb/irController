@@ -1,0 +1,8 @@
+.pio
+CMakeListsPrivate.txt
+cmake-build-*/ 
+
+private_config.cpp
+
+# for JetBrains Clion
+.idea/deployment.xml
