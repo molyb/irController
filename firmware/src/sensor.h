@@ -5,6 +5,7 @@
 #include "Ticker.h"
 #include "Adafruit_ADT7410.h"
 
+
 class MonitorTemperature
 {
 public:
@@ -12,9 +13,6 @@ public:
     void update(void);
     float getTemperature(void);
 private:
-    bool update_interval(void);
-    bool update_time(void);
-
     uint16_t monitoring_interval_minute_;
     time_t prev_time_;
     time_t current_time_;

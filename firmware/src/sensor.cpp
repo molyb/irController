@@ -21,6 +21,7 @@ bool updateIsRequired(void)
 }
 
 
+
 MonitorTemperature::MonitorTemperature(uint16_t monitoring_interval_minute)
 {
     monitoring_interval_minute_ = monitoring_interval_minute;
@@ -31,7 +32,7 @@ MonitorTemperature::MonitorTemperature(uint16_t monitoring_interval_minute)
     temp_sensor_.begin();
     update();  // ひとまず初期値を入れておく
     temperature_ = temp_sensor_.readTempC();
-    ticker_.attach_scheduled(5., std::bind(&MonitorTemperature::update, this));
+    ticker_.attach_scheduled(monitoring_interval_minute_, std::bind(&MonitorTemperature::update, this));
 }
 
 

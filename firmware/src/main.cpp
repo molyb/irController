@@ -5,14 +5,21 @@
 #include <IRremoteESP8266.h>
 #include "infrared.h"
 #include "sensor.h"
+#include "uploader.h"
 
 #define JST     3600*9
 
 extern const char* ssid;
 extern const char* password;
+extern unsigned int ambient_channel_id;
+extern const char* ambient_write_key;
+
 
 ESP8266WebServer server(80);
-MonitorTemperature ac(60);
+WiFiClient client;
+MonitorTemperature monitor(60);
+Uploader uploader(&monitor, &client);
+
 
 void handleRoot(void) {
     // HTTPステータスコード(200) リクエストの成功
@@ -20,8 +27,8 @@ void handleRoot(void) {
 }
 
 void handleTemperature(void) {
-    ac.update();
-    float temperature = ac.getTemperature();
+    monitor.update();
+    float temperature = monitor.getTemperature();
 
     String message = "temperature: " + (String)temperature + " [deg]";
     server.send(200, "text/plain", message);
@@ -87,17 +94,14 @@ void setup() {
     server.begin();
     Serial.println("HTTP Server started");
 
-    ac.update();
+    monitor.update();
     Serial.print("temperature: ");
-    Serial.print(ac.getTemperature(), 3);
+    Serial.print(monitor.getTemperature(), 3);
     Serial.println("");
+
+    uploader.enable(ambient_channel_id, ambient_write_key, 60);
 }
 
 void loop() {
     server.handleClient();
-//    ac.update();
-//    Serial.print("temperature: ");
-//    Serial.print(ac.getTemperature(), 3);
-//    Serial.println("");
-//    delay(1000);
 }
