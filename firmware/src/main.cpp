@@ -6,7 +6,7 @@
 #include "infrared.h"
 #include "sensor.h"
 #include "uploader.h"
-
+#include "RtcEvent.h"
 #define JST     3600*9
 
 extern const char* ssid;
@@ -19,6 +19,7 @@ ESP8266WebServer server(80);
 WiFiClient client;
 MonitorTemperature monitor(60);
 Uploader uploader(&monitor, &client);
+RtcEvent rtc;
 
 
 void handleRoot(void) {
@@ -51,6 +52,13 @@ void handleNotFound(void) {
     server.send(404, "text/plain", message);
 }
 
+void dummy_on(void) {
+    Serial.println("dummy_on is called.");
+}
+
+void dummy_off(void) {
+    Serial.println("dummy_off is called.");
+}
 
 void setup() {
     Serial.begin(115200);
@@ -75,14 +83,31 @@ void setup() {
     Serial.print( "Subnet mask: ");
     Serial.println(WiFi.subnetMask());
 
-    configTime(JST, 0, "ntp.nict.jp", "ntp.jst.mfeed.ad.jp");
-    Serial.println("Sync ntp");
-    while (time(NULL) == 0) {
-        delay(500);
+//    configTime(0, 0, "ntp.nict.jp", "ntp.jst.mfeed.ad.jp", "time.cloudflare.com");
+    configTime(JST, 0, "ntp.nict.jp", "ntp.jst.mfeed.ad.jp", "time.cloudflare.com");
+    Serial.print("Sync ntp");
+    time_t current_time;
+    struct tm* current_tm;
+    do  {
         Serial.print(".");
-    }
+        delay(1000);
+        current_time = time(NULL);
+        current_tm = localtime(&current_time);
+    } while (current_tm->tm_year + 1900 < 2000);
     Serial.println("");
-    Serial.println("finished.");
+    Serial.print("time info: " + (String)asctime(current_tm));
+
+    Serial.print("current time: ");
+    Serial.print(current_tm->tm_year);
+    Serial.print("/");
+    Serial.print(current_tm->tm_mon);
+    Serial.print("/");
+    Serial.print(current_tm->tm_mday);
+    Serial.print(", ");
+    Serial.print(current_tm->tm_hour);
+    Serial.print(":");
+    Serial.println(current_tm->tm_min);
+
 
     server.on("/", handleRoot);
     server.onNotFound(handleNotFound);
@@ -100,6 +125,15 @@ void setup() {
     Serial.println("");
 
     uploader.enable(ambient_channel_id, ambient_write_key, 60);
+
+    rtc.append(8, 00, dummy_on);
+    rtc.append(8, 30, dummy_on);
+    rtc.append(8, 30, dummy_on);
+    rtc.append(7, 30, dummy_on);
+    rtc.append(20, 06, dummy_on);
+    rtc.append(19, 41, dummy_off);
+    rtc.append(0, 41, dummy_off);
+    rtc.ready();
 }
 
 void loop() {

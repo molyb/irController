@@ -6,3 +6,4 @@ private_config.cpp
 
 # for JetBrains Clion
 .idea/deployment.xml
+.idea/serialmonitor_settings.xml
