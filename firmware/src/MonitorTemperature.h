@@ -5,17 +5,14 @@
 #include "Ticker.h"
 #include "Adafruit_ADT7410.h"
 
-
 class MonitorTemperature
 {
 public:
-    MonitorTemperature(uint16_t monitoring_interval_minute);
+    MonitorTemperature(uint16_t interval_sec);
     void update(void);
-    float getTemperature(void);
+    float temperature(void);
 private:
-    uint16_t monitoring_interval_minute_;
-    time_t prev_time_;
-    time_t current_time_;
+    uint16_t interval_sec_;
     Ticker ticker_;
     Adafruit_ADT7410 temp_sensor_;
     float temperature_;

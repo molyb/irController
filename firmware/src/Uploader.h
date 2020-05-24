@@ -2,7 +2,7 @@
 #define FIRMWARE_UPLOADER_H
 
 #include <ESP8266WiFi.h>
-#include "sensor.h"
+#include "MonitorTemperature.h"
 #include "ambient.h"
 
 

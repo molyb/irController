@@ -1,18 +1,48 @@
-#include <ESP8266WebServer.h>
+#include "server_handler.h"
+#include "MonitorTemperature.h"
 // https://github.com/markszabo/IRremoteESP8266
 #include <IRremoteESP8266.h>
 #include <IRsend.h>
 #include <IRrecv.h>
 #include <ir_hitachi.h>
+#include "parameters.h"
 
 
-extern ESP8266WebServer server;
+const unsigned int ir_out_pin = IR_OUT_PIN;
 
-const static unsigned int irOutPin = 5;
 
+void handleRoot(void) {
+    // HTTPステータスコード(200) リクエストの成功
+    server.send(200, "text/plain", "IR Controller");
+}
+
+void handleTemperature(void) {
+    monitor.update();
+    float temperature = monitor.temperature();
+
+    String message = "temperature: " + (String)temperature + " [deg]";
+    server.send(200, "text/plain", message);
+}
+
+
+void handleNotFound(void) {
+    String message = "File Not Found\n\n";
+    message += "URI: ";
+    message += server.uri();
+    message += "\nMethod: ";
+    message += (server.method() == HTTP_GET) ? "GET" : "POST";
+    message += "\nArguments: ";
+    message += server.args();
+    message += "\n";
+    for (uint8_t i = 0; i < server.args(); i++) {
+        message += " " + server.argName(i) + ": " + server.arg(i) + "\n";
+    }
+    // HTTPステータスコード(404) 未検出(存在しないファイルにアクセス)
+    server.send(404, "text/plain", message);
+}
 
 void handleLight(void) {
-    IRsend irsend(irOutPin);
+    IRsend irsend(ir_out_pin);
     irsend.begin();
 
     String message = "Light Controller\n";
@@ -46,7 +76,7 @@ void handleLight(void) {
 }
 
 void handleHitachiAc(void) {
-    IRHitachiAc424 ac(irOutPin);
+    IRHitachiAc424 ac(ir_out_pin);
     ac.begin();
 
     String message = "AC Controller\n";

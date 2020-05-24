@@ -1,4 +1,4 @@
-#include "uploader.h"
+#include "Uploader.h"
 
 
 Uploader::Uploader(MonitorTemperature* monitor, WiFiClient* client) {
@@ -16,7 +16,7 @@ bool Uploader::enable(unsigned int channel_id, const char * write_key, uint16_t 
 
 
 void Uploader::exec(void) {
-    ambient_.set(1, monitor_->getTemperature());
-//    ambient_.set(1, ac.getTemperature());
+    ambient_.set(1, monitor_->temperature());
+//    ambient_.set(1, ac.temperature());
     ambient_.send();
 }

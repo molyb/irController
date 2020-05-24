@@ -1,63 +1,56 @@
 #include "Arduino.h"
 
-#include <ESP8266WebServer.h>
+#include "parameters.h"
+
+#include "server_handler.h"
 // https://github.com/markszabo/IRremoteESP8266
 #include <IRremoteESP8266.h>
-#include "infrared.h"
-#include "sensor.h"
-#include "uploader.h"
+#include <IRsend.h>
+#include <ir_hitachi.h>
+#include "MonitorTemperature.h"
+#include "Uploader.h"
 #include "RtcEvent.h"
-#define JST     3600*9
+
+
+#define JST (3600 * 9)
+#define AMBIENT_UPDATE_INTERVAL_SEC (5 * 60)
 
 extern const char* ssid;
 extern const char* password;
 extern unsigned int ambient_channel_id;
 extern const char* ambient_write_key;
 
-
-ESP8266WebServer server(80);
 WiFiClient client;
+ESP8266WebServer server(80);
 MonitorTemperature monitor(60);
 Uploader uploader(&monitor, &client);
 RtcEvent rtc;
 
-
-void handleRoot(void) {
-    // HTTPステータスコード(200) リクエストの成功
-    server.send(200, "text/plain", "IR Controller");
-}
-
-void handleTemperature(void) {
-    monitor.update();
-    float temperature = monitor.getTemperature();
-
-    String message = "temperature: " + (String)temperature + " [deg]";
-    server.send(200, "text/plain", message);
-}
-
-
-void handleNotFound(void) {
-    String message = "File Not Found\n\n";
-    message += "URI: ";
-    message += server.uri();
-    message += "\nMethod: ";
-    message += (server.method() == HTTP_GET) ? "GET" : "POST";
-    message += "\nArguments: ";
-    message += server.args();
-    message += "\n";
-    for (uint8_t i = 0; i < server.args(); i++) {
-        message += " " + server.argName(i) + ": " + server.arg(i) + "\n";
+void autoAcOn(void) {
+    Serial.println("autoAcOn is called.");
+    float temp = monitor.temperature();
+    // 現時点では冷房のみ対応
+    if (temp < 30.) {
+        return;
     }
-    // HTTPステータスコード(404) 未検出(存在しないファイルにアクセス)
-    server.send(404, "text/plain", message);
+    IRHitachiAc424 ac(IR_OUT_PIN);
+    ac.begin();
+    ac.on();
+    ac.setMode(kHitachiAc424Cool);
+    ac.setTemp(28);
+    ac.setFan(kHitachiAc424FanAuto);
+    ac.setButton(kHitachiAc424ButtonPowerMode);
+    ac.send();
+    Serial.println(ac.toString());
 }
 
-void dummy_on(void) {
-    Serial.println("dummy_on is called.");
-}
-
-void dummy_off(void) {
-    Serial.println("dummy_off is called.");
+void autoAcOff(void) {
+    IRHitachiAc424 ac(IR_OUT_PIN);
+    ac.begin();
+    ac.off();
+    ac.setButton(kHitachiAc424ButtonPowerMode);
+    ac.send();
+    Serial.println(ac.toString());
 }
 
 void setup() {
@@ -83,7 +76,6 @@ void setup() {
     Serial.print( "Subnet mask: ");
     Serial.println(WiFi.subnetMask());
 
-//    configTime(0, 0, "ntp.nict.jp", "ntp.jst.mfeed.ad.jp", "time.cloudflare.com");
     configTime(JST, 0, "ntp.nict.jp", "ntp.jst.mfeed.ad.jp", "time.cloudflare.com");
     Serial.print("Sync ntp");
     time_t current_time;
@@ -95,44 +87,26 @@ void setup() {
         current_tm = localtime(&current_time);
     } while (current_tm->tm_year + 1900 < 2000);
     Serial.println("");
-    Serial.print("time info: " + (String)asctime(current_tm));
-
-    Serial.print("current time: ");
-    Serial.print(current_tm->tm_year);
-    Serial.print("/");
-    Serial.print(current_tm->tm_mon);
-    Serial.print("/");
-    Serial.print(current_tm->tm_mday);
-    Serial.print(", ");
-    Serial.print(current_tm->tm_hour);
-    Serial.print(":");
-    Serial.println(current_tm->tm_min);
-
+    Serial.print((String)asctime(current_tm));
 
     server.on("/", handleRoot);
     server.onNotFound(handleNotFound);
-
     server.on("/temperature", handleTemperature);
     server.on("/light", handleLight);
     server.on("/hitachi-ac", handleHitachiAc);
-
     server.begin();
     Serial.println("HTTP Server started");
 
     monitor.update();
     Serial.print("temperature: ");
-    Serial.print(monitor.getTemperature(), 3);
+    Serial.print(monitor.temperature(), 3);
     Serial.println("");
 
-    uploader.enable(ambient_channel_id, ambient_write_key, 60);
+    uploader.enable(ambient_channel_id, ambient_write_key, AMBIENT_UPDATE_INTERVAL_SEC);
 
-    rtc.append(8, 00, dummy_on);
-    rtc.append(8, 30, dummy_on);
-    rtc.append(8, 30, dummy_on);
-    rtc.append(7, 30, dummy_on);
-    rtc.append(20, 06, dummy_on);
-    rtc.append(19, 41, dummy_off);
-    rtc.append(0, 41, dummy_off);
+    rtc.append(6, 30, autoAcOn);
+    rtc.append(8, 00, autoAcOff);
+    rtc.append(18, 30, autoAcOn);
     rtc.ready();
 }
 
