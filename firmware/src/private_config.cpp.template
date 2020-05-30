@@ -2,3 +2,6 @@ const char* ssid = "your_ssid";
 const char* password = "your_password";
 unsigned int ambient_channel_id = 0000;  // constにするとvolatileつけても最適化で消されてしまう
 const char* ambient_write_key = "your_ambient_channel_write_key";
+
+// eventHandler.cppでweak装飾しているので必要に応じて定義を記述
+void acNotification(bool power, uint8_t mode, uint8_t temperature);
