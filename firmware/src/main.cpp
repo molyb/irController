@@ -1,146 +1,59 @@
 #include "Arduino.h"
 
-#include <ESP8266WiFi.h>
-#include <WiFiClient.h>
-#include <ESP8266WebServer.h>
+#include "parameters.h"
+
+#include "server_handler.h"
 // https://github.com/markszabo/IRremoteESP8266
 #include <IRremoteESP8266.h>
 #include <IRsend.h>
-#include <IRrecv.h>
 #include <ir_hitachi.h>
-#include <wire.h>
+#include "MonitorTemperature.h"
+#include "Uploader.h"
+#include "RtcEvent.h"
 
-#define IR_DATA_NUM_MAX 128
-#define GPIO_PIN_IR_RX  *(volatile uint32_t *)0x60000360 // GPIO14
+
+#define JST (3600 * 9)
+#define AMBIENT_UPDATE_INTERVAL_SEC (5 * 60)
 
 extern const char* ssid;
 extern const char* password;
+extern unsigned int ambient_channel_id;
+extern const char* ambient_write_key;
 
+WiFiClient client;
 ESP8266WebServer server(80);
-WiFiClient wifiClient;
+MonitorTemperature monitor(60);
+Uploader uploader(&monitor, &client);
+RtcEvent rtc;
 
-const unsigned int irOutPin = 5;
-IRsend irsend(irOutPin);
-
-void handleRoot(void) {
-    // HTTPステータスコード(200) リクエストの成功
-    server.send(200, "text/plain", "IR Controller");
-}
-
-
-void handleLight(void) {
-    String message = "Light Controller\n";
-    String cmd = "";
-
-    const uint64_t irPatternNecLightOn = 0x41B6659A;
-    const uint64_t irPatternNecLightNight = 0x41b63dc2;
-    const uint64_t irPatternNecLightOff = 0x41B67D82;
-    const uint16_t irPatternBitsLightOn = 32;
-    const uint16_t irPatternBitsLightNight = 32;
-    const uint16_t irPatternBitsLightOff = 32;
-
-    for (uint8_t i = 0; i < server.args(); i++) {
-        if (server.argName(i) == "cmd")
-            cmd = server.arg(i);
+void autoAcOn(void) {
+    Serial.println("autoAcOn is called.");
+    float temp = monitor.temperature();
+    // 現時点では冷房のみ対応
+    if (temp < 30.) {
+        return;
     }
-    if (cmd == "on") {
-        irsend.sendNEC(irPatternNecLightOn, irPatternBitsLightOn);
-        message += "cmd: on\n";
-    } else if (cmd == "night") {
-        irsend.sendNEC(irPatternNecLightNight, irPatternBitsLightNight);
-        message += "cmd: night\n";
-    } else if (cmd == "off") {
-        irsend.sendNEC(irPatternNecLightOff, irPatternBitsLightOff);
-        message += "cmd: off\n";
-    } else {
-        message += "cmd: invalid command\n";
-    }
-    // HTTPステータスコード(200) リクエストの成功
-    server.send(200, "text/plain", message);
-}
-
-void handleHitachiAc(void) {
-    String message = "AC Controller\n";
-    String power = "off";
-    String operation_mode = "fan";
-    String temp = "22";
-    String fan = "auto";
-    String swing = "off";
-
-    // swingは実装の手間と実用面を考慮してサポートしない
-    // IRremoteESP8266ライブラリのIRHitachiAc424メンバ関数setSwingVToggleコメントを参照
-    for (uint8_t i = 0; i < server.args(); i++) {
-        if (server.argName(i) == "power") {
-            power = server.arg(i);
-        } else if (server.argName(i) == "mode") {
-            operation_mode = server.arg(i);
-        } else  if (server.argName(i) == "temp") {
-            temp = server.arg(i);
-        } else if (server.argName(i) == "fan") {
-            fan = server.arg(i);
-        } else {
-            // do nothing
-        }
-    }
-    IRHitachiAc424 ac(irOutPin);
-    if (power == "on") {
-        ac.on();
-    } else {
-        ac.off();
-    }
-    if (operation_mode == "fan") {
-        ac.setMode(kHitachiAc424Fan);
-    } else if (operation_mode == "cool") {
-        ac.setMode(kHitachiAc424Cool);
-    } else if (operation_mode == "heat") {
-        ac.setMode(kHitachiAc424Heat);
-    } else if (operation_mode == "dry") {
-        ac.setMode(kHitachiAc424Dry);
-    } else {
-        // IRHitachiAc424にはオートが無い
-        message += ("Selected invalid mode:" + operation_mode + "\n");
-        message += ("Please select the righ mode. [fan, cool, heat, dry]\n");
-    }
-    // 数値に変換できない場合は0が返ってくるのでsetTempで保護処理される
-    uint8_t num = strtol(temp.c_str(), NULL, 10);
-    ac.setTemp(num);
-    if (fan == "low") {
-        ac.setFan(kHitachiAc424FanLow);
-    } else if (fan == "medium") {
-        ac.setFan(kHitachiAc424FanMedium);
-    } else if (fan == "high") {
-        ac.setFan(kHitachiAc424FanHigh);
-    } else {
-        ac.setFan(kHitachiAc424FanAuto);
-    }
+    IRHitachiAc424 ac(IR_OUT_PIN);
+    ac.begin();
+    ac.on();
+    ac.setMode(kHitachiAc424Cool);
+    ac.setTemp(28);
+    ac.setFan(kHitachiAc424FanAuto);
     ac.setButton(kHitachiAc424ButtonPowerMode);
     ac.send();
-    message += "\n";
-    message += ac.toString();
-    // HTTPステータスコード(200) リクエストの成功
-    server.send(200, "text/plain", message);
+    Serial.println(ac.toString());
 }
 
-
-void handleNotFound(void) {
-    String message = "File Not Found\n\n";
-    message += "URI: ";
-    message += server.uri();
-    message += "\nMethod: ";
-    message += (server.method() == HTTP_GET) ? "GET" : "POST";
-    message += "\nArguments: ";
-    message += server.args();
-    message += "\n";
-    for (uint8_t i = 0; i < server.args(); i++) {
-        message += " " + server.argName(i) + ": " + server.arg(i) + "\n";
-    }
-    // HTTPステータスコード(404) 未検出(存在しないファイルにアクセス)
-    server.send(404, "text/plain", message);
+void autoAcOff(void) {
+    IRHitachiAc424 ac(IR_OUT_PIN);
+    ac.begin();
+    ac.off();
+    ac.setButton(kHitachiAc424ButtonPowerMode);
+    ac.send();
+    Serial.println(ac.toString());
 }
-
 
 void setup() {
-    irsend.begin();
     Serial.begin(115200);
     delay(10);
 
@@ -163,27 +76,40 @@ void setup() {
     Serial.print( "Subnet mask: ");
     Serial.println(WiFi.subnetMask());
 
-    server.on("/", handleRoot);
+    configTime(JST, 0, "ntp.nict.jp", "ntp.jst.mfeed.ad.jp", "time.cloudflare.com");
+    Serial.print("Sync ntp");
+    time_t current_time;
+    struct tm* current_tm;
+    do  {
+        Serial.print(".");
+        delay(1000);
+        current_time = time(NULL);
+        current_tm = localtime(&current_time);
+    } while (current_tm->tm_year + 1900 < 2000);
+    Serial.println("");
+    Serial.print((String)asctime(current_tm));
 
+    server.on("/", handleRoot);
+    server.onNotFound(handleNotFound);
+    server.on("/temperature", handleTemperature);
     server.on("/light", handleLight);
     server.on("/hitachi-ac", handleHitachiAc);
-
-    // 存在しないURLを指定した場合の動作を指定する
-    server.onNotFound(handleNotFound);
-
     server.begin();
     Serial.println("HTTP Server started");
 
-    Wire.begin(12, 13);
-    Wire.begin();
+    monitor.update();
+    Serial.print("temperature: ");
+    Serial.print(monitor.temperature(), 3);
+    Serial.println("");
 
+    uploader.enable(ambient_channel_id, ambient_write_key, AMBIENT_UPDATE_INTERVAL_SEC);
+
+    rtc.append(6, 30, autoAcOn);
+    rtc.append(8, 00, autoAcOff);
+    rtc.append(18, 30, autoAcOn);
+    rtc.ready();
 }
 
 void loop() {
     server.handleClient();
-    uint8_t target_addr = 0x10;
-    Wire.beginTransmission(target_addr);
-    Wire.write(0x55);
-    Wire.endTransmission();
-    delay(100);
 }
