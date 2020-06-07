@@ -1,4 +1,4 @@
-#include "server_handler.h"
+#include "serverHandler.h"
 #include "MonitorTemperature.h"
 // https://github.com/markszabo/IRremoteESP8266
 #include <IRremoteESP8266.h>
@@ -9,7 +9,6 @@
 
 
 const unsigned int ir_out_pin = IR_OUT_PIN;
-
 
 void handleRoot(void) {
     // HTTPステータスコード(200) リクエストの成功
@@ -42,12 +41,6 @@ void handleNotFound(void) {
 }
 
 void handleLight(void) {
-    IRsend irsend(ir_out_pin);
-    irsend.begin();
-
-    String message = "Light Controller\n";
-    String cmd = "";
-
     const uint64_t irPatternNecLightOn = 0x41B6659A;
     const uint64_t irPatternNecLightNight = 0x41b63dc2;
     const uint64_t irPatternNecLightOff = 0x41B67D82;
@@ -55,24 +48,79 @@ void handleLight(void) {
     const uint16_t irPatternBitsLightNight = 32;
     const uint16_t irPatternBitsLightOff = 32;
 
-    for (uint8_t i = 0; i < server.args(); i++) {
-        if (server.argName(i) == "cmd")
-            cmd = server.arg(i);
-    }
-    if (cmd == "on") {
+    IRsend irsend(ir_out_pin);
+    irsend.begin();
+    enum State {
+        unknown,
+        on,
+        night,
+        off
+    };
+    enum State state = unknown;
+    //  LED の制御(server.method()でメソッドごとの処理を切り替えられるが今は同じにしておく)
+    String val = server.arg("light");
+    if (val == "on") {
+        Serial.println("debug: on");
         irsend.sendNEC(irPatternNecLightOn, irPatternBitsLightOn);
-        message += "cmd: on\n";
-    } else if (cmd == "night") {
+        state = on;
+    } else if (val == "night") {
+        Serial.println("debug: night");
         irsend.sendNEC(irPatternNecLightNight, irPatternBitsLightNight);
-        message += "cmd: night\n";
-    } else if (cmd == "off") {
+        state = night;
+    } else if (val == "off") {
+        Serial.println("debug: off");
         irsend.sendNEC(irPatternNecLightOff, irPatternBitsLightOff);
-        message += "cmd: off\n";
+        state = off;
     } else {
-        message += "cmd: invalid command\n";
+        ;
     }
-    // HTTPステータスコード(200) リクエストの成功
-    server.send(200, "text/plain", message);
+
+    auto state2str = [](enum State state) {
+        if (state == on) {
+            return String("on");
+        } else if (state == night) {
+            return String("night");
+        } else if (state == off) {
+            return String("off");
+        } else {
+            ;
+        }
+        return String("unknown");
+    };
+
+    String header = "\
+<html lang=\"ja\">\n\
+    <meta charset=\"utf-8\">\n\
+    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n\
+    <head>\n\
+    <title>IrController</title>\n\
+</head>\n\
+  <title>IrController</title>\n\
+</head>\n";
+
+    String body = "\
+<body style=\"font-family: sans-serif; background-color: #ffffff;\" >\n\
+  <h1>Light Controller</h1>\n\
+  <p>";
+    body += "\
+    current state: " + state2str(state) + "\n";
+    body += "\
+    <form action='' method='post'>\n\
+      <button name='light' value='on'>On</button>\n\
+    </form>\n\
+    <form action='' method='post'>\n\
+      <button name='light' value='night'>Night</button>\n\
+    </form>\n\
+    <form action='' method='post'>\n\
+      <button name='light' value='off'>Off</button>\n\
+    </form>\n\
+  </p>\n\
+</body>\n";
+
+    String footer = "</html>\n";
+    String message = header + body + footer;
+
+    server.send(200, "text/html", message);
 }
 
 void handleHitachiAc(void) {

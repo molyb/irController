@@ -2,8 +2,8 @@
 // Created by newrs on 2020/05/24.
 //
 
-#ifndef FIRMWARE_SERVER_HANDLER_H
-#define FIRMWARE_SERVER_HANDLER_H
+#ifndef FIRMWARE_SERVERHANDLER_H
+#define FIRMWARE_SERVERHANDLER_H
 
 #include <ESP8266WebServer.h>
 #include "MonitorTemperature.h"
@@ -17,4 +17,4 @@ void handleNotFound(void);
 void handleLight(void);
 void handleHitachiAc(void);
 
-#endif //FIRMWARE_SERVER_HANDLER_H
+#endif //FIRMWARE_SERVERHANDLER_H
