@@ -93,10 +93,8 @@ void handleLight(void) {
     <meta charset=\"utf-8\">\n\
     <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n\
     <head>\n\
-    <title>IrController</title>\n\
-</head>\n\
-  <title>IrController</title>\n\
-</head>\n";
+        <title>IrController</title>\n\
+    </head>";
 
     String body = "\
 <body style=\"font-family: sans-serif; background-color: #ffffff;\" >\n\
@@ -127,28 +125,19 @@ void handleHitachiAc(void) {
     IRHitachiAc424 ac(ir_out_pin);
     ac.begin();
 
-    String message = "AC Controller\n";
     String power = "off";
     String operation_mode = "fan";
     String temp = "22";
     String fan = "auto";
     String swing = "off";
 
+    power = server.arg("power");
+    operation_mode = server.arg("mode");
+    temp = server.arg("temp");
+    fan = server.arg("fan");
     // swingは実装の手間と実用面を考慮してサポートしない
     // IRremoteESP8266ライブラリのIRHitachiAc424メンバ関数setSwingVToggleコメントを参照
-    for (uint8_t i = 0; i < server.args(); i++) {
-        if (server.argName(i) == "power") {
-            power = server.arg(i);
-        } else if (server.argName(i) == "mode") {
-            operation_mode = server.arg(i);
-        } else  if (server.argName(i) == "temp") {
-            temp = server.arg(i);
-        } else if (server.argName(i) == "fan") {
-            fan = server.arg(i);
-        } else {
-            // do nothing
-        }
-    }
+    // swing = server.arg("swing");
 
     if (power == "on") {
         ac.on();
@@ -164,9 +153,8 @@ void handleHitachiAc(void) {
     } else if (operation_mode == "dry") {
         ac.setMode(kHitachiAc424Dry);
     } else {
-        // IRHitachiAc424にはオートが無い
-        message += ("Selected invalid mode:" + operation_mode + "\n");
-        message += ("Please select the righ mode. [fan, cool, heat, dry]\n");
+        // IRHitachiAc424にはオートが無いのでひとまず送風にしておく
+        ac.setMode(kHitachiAc424Fan);
     }
     // 数値に変換できない場合は0が返ってくるのでsetTempで保護処理される
     uint8_t num = strtol(temp.c_str(), NULL, 10);
@@ -178,12 +166,61 @@ void handleHitachiAc(void) {
     } else if (fan == "high") {
         ac.setFan(kHitachiAc424FanHigh);
     } else {
+        // ライブラリにautoはあったが設定するとlowになる
+        // 実際にも機能として無さそうなのでelseをlowにしてもいいかも
         ac.setFan(kHitachiAc424FanAuto);
     }
     ac.setButton(kHitachiAc424ButtonPowerMode);
     ac.send();
-    message += "\n";
-    message += ac.toString();
+
+    String header = "\
+<html lang=\"ja\">\n\
+    <meta charset=\"utf-8\">\n\
+    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n\
+    <head>\n\
+        <title>IrController</title>\n\
+    </head>\n";
+
+    String body = "\
+<body style=\"font-family: sans-serif; background-color: #ffffff;\" >\n\
+    <h1>Hitachi AC Controller</h1>\n\
+    <p>\
+    <form>\
+        <p> Power\
+            <select name=\"power\">\
+                <option value=\"on\">On</option>\
+                <option value=\"off\">Off</option>\
+            </select>\
+        </p>\
+        <p> Mode\
+            <select name=\"mode\">\
+                <option value=\"fan\">Fan</option>\
+                <option value=\"dry\">Dry</option>\
+                <option value=\"cool\">Cool</option>\
+                <option value=\"heat\">Heat</option>\
+            </select>\
+        </p>\
+        <p> Temperature\
+            <input type=\"number\" name=\"temp\" value=\"27\">\
+        </p>\
+        <p> Fan\
+            <select name=\"fan\">\
+                <option value=\"low\">Low</option>\
+                <option value=\"mid\">Mid</option>\
+                <option value=\"high\">High</option>\
+            </select>\
+        </p>\
+        <input type=\"submit\" value=\"Submit\" />\
+    </form>\
+    </p>\n";
+
+    String state = ac.toString();
+    body += "<p>" + state + "</p>\n";
+    body += "</body>\n";
+
+    String footer = "</html>\n";
+    String message = header + body + footer;
+
     // HTTPステータスコード(200) リクエストの成功
-    server.send(200, "text/plain", message);
+    server.send(200, "text/html", message);
 }
