@@ -11,8 +11,27 @@
 const unsigned int ir_out_pin = IR_OUT_PIN;
 
 void handleRoot(void) {
-    // HTTPステータスコード(200) リクエストの成功
-    server.send(200, "text/plain", "IR Controller");
+    String message = "\
+<html lang=\"ja\">\n\
+    <meta charset=\"utf-8\">\n\
+    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n\
+    <head>\n\
+        <title>IrController</title>\n\
+    </head>\
+    <body style=\"font-family: sans-serif; background-color: #ffffff;\" >\n\
+    <h1>IR Controller</h1>\n\
+    <p>\
+        <a href= \"temperature\">Monitor Temperature</a>\
+    </p>\
+    <p>\
+        <a href= \"light\">Light Controller</a>\
+    </p>\n\
+    <p>\
+        <a href= \"hitachi-ac\">Hitachi AC Controller</a>\
+    </p>\n\
+    </body>\
+</html>";
+    server.send(200, "text/html", message);
 }
 
 void handleTemperature(void) {
