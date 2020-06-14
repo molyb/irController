@@ -21,7 +21,6 @@ void acNotification(bool power, uint8_t mode, uint8_t temperature) {
 
 
 void autoAcOn(void) {
-    Serial.println("autoAcOn is called.");
     float temp = monitor.temperature();
     // 現時点では冷房のみ対応
     if (temp < 30.) {
