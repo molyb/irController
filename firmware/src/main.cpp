@@ -1,13 +1,8 @@
 #include "Arduino.h"
 
-#include "parameters.h"
-
 #include "server_handler.h"
-// https://github.com/markszabo/IRremoteESP8266
-#include <IRremoteESP8266.h>
-#include <IRsend.h>
-#include <ir_hitachi.h>
-#include "MonitorTemperature.h"
+#include "eventHandler.h"
+
 #include "Uploader.h"
 #include "RtcEvent.h"
 
@@ -26,32 +21,7 @@ MonitorTemperature monitor(60);
 Uploader uploader(&monitor, &client);
 RtcEvent rtc;
 
-void autoAcOn(void) {
-    Serial.println("autoAcOn is called.");
-    float temp = monitor.temperature();
-    // 現時点では冷房のみ対応
-    if (temp < 30.) {
-        return;
-    }
-    IRHitachiAc424 ac(IR_OUT_PIN);
-    ac.begin();
-    ac.on();
-    ac.setMode(kHitachiAc424Cool);
-    ac.setTemp(28);
-    ac.setFan(kHitachiAc424FanAuto);
-    ac.setButton(kHitachiAc424ButtonPowerMode);
-    ac.send();
-    Serial.println(ac.toString());
-}
 
-void autoAcOff(void) {
-    IRHitachiAc424 ac(IR_OUT_PIN);
-    ac.begin();
-    ac.off();
-    ac.setButton(kHitachiAc424ButtonPowerMode);
-    ac.send();
-    Serial.println(ac.toString());
-}
 
 void setup() {
     Serial.begin(115200);
