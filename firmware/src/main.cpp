@@ -1,11 +1,12 @@
 #include "Arduino.h"
 #include <FS.h>
+#include <EEPROM.h>
 
 #include "serverHandler.h"
 #include "eventHandler.h"
 #include "Uploader.h"
 #include "RtcEvent.h"
-
+#include "saveEvent.h"
 
 #define JST (3600 * 9)
 #define AMBIENT_UPDATE_INTERVAL_SEC (5 * 60)
@@ -74,11 +75,34 @@ void setup() {
     Serial.print(monitor.temperature(), 3);
     Serial.println("");
 
-    uploader.enable(ambient_channel_id, ambient_write_key, AMBIENT_UPDATE_INTERVAL_SEC);
+//    uploader.enable(ambient_channel_id, ambient_write_key, AMBIENT_UPDATE_INTERVAL_SEC);
+    EEPROM.begin(1024);
+    SaveEvent events(&EEPROM);
 
-    rtc.append(6, 30, autoAcOn);
-    rtc.append(8, 00, autoAcOff);
-    rtc.append(18, 30, autoAcOn);
+    if (!events.checksumIsValid()) {
+        Serial.println("eeprom is erased all.");
+        events.eraseAll();
+        Serial.println("register default events.");
+        events.push("autoAcOn", autoAcOn, 6, 30);
+        events.push("autoAcOff", autoAcOff, 8, 00);
+        events.push("autoAcOn", autoAcOn, 18, 30);
+    }
+    std::list<Event> event_list = events.get();
+    Serial.println(String(event_list.begin()->func_name));
+    Serial.println(String(event_list.begin()->hour));
+    Serial.println(String(event_list.begin()->minute));
+    for_each (event_list.begin(), event_list.end(), [](Event event) {
+        if (event.func != NULL) {
+            Serial.println(event.func_name);
+            Serial.println(event.hour);
+            Serial.println(event.minute);
+            Serial.println("");
+            rtc.append(event.hour, event.minute, event.func);
+        }
+    });
+//    rtc.append(6, 30, autoAcOn);
+//    rtc.append(8, 00, autoAcOff);
+//    rtc.append(18, 30, autoAcOn);
     rtc.ready();
 }
 

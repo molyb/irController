@@ -59,6 +59,19 @@ bool SaveEvent::push(String func_name, void (*func)(void), uint8_t hour, uint8_t
 }
 
 
+std::list<Event> SaveEvent::get(void) {
+    std::list<Event> events;
+    for (size_t i = 0; i < save_event_max_; i++) {
+        Event read_event;
+        eeprom_->get<Event>(SAVE_EVENT_EVENT_BASE_ADDRESS + sizeof(Event) * i, read_event);
+        if (read_event.func != NULL) {
+            events.push_back(read_event);
+        }
+    }
+    return events;
+}
+
+
 uint32_t SaveEvent::calcChecksum(void) {
     uint32_t checksum = 0x00000000;
     for (uintptr_t address = SAVE_EVENT_EVENT_BASE_ADDRESS; address < eeprom_->length(); address++) {

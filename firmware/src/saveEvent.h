@@ -7,7 +7,7 @@
 
 #include <Arduino.h>
 #include <EEPROM.h>
-
+#include <list>
 
 #define SAVE_EVENT_NUMBER_OF_DATA_ADDRESS 0x00  // 4 byte
 #define SAVE_EVENT_CHECKSUM_ADDRESS       0x04  // 4 byte
@@ -29,6 +29,7 @@ public:
     void eraseAll(void);
     void erase(uint16_t index);
     bool push(String func_name, void (*func)(void), uint8_t hour, uint8_t minute);
+    std::list<Event> get(void);
 
 private:
     uint32_t calcChecksum(void);
