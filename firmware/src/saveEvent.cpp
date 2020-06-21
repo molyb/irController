@@ -6,9 +6,9 @@
 
 #define SAVE_EVENT_MEM_SIZE 1024
 
-SaveEvent::SaveEvent(EEPROMClass &eeprom) {
-    *eeprom_ = eeprom;
-    if (eeprom.length() == 0) {
+SaveEvent::SaveEvent(EEPROMClass *eeprom) {
+    eeprom_ = eeprom;
+    if (eeprom->length() == 0) {
         eeprom_->begin(SAVE_EVENT_MEM_SIZE);
     }
     save_event_max_ = (size_t)eeprom_->length() / (size_t)sizeof(Event);
@@ -60,9 +60,8 @@ bool SaveEvent::push(String func_name, void (*func)(void), uint8_t hour, uint8_t
 
 
 uint32_t SaveEvent::calcChecksum(void) {
-    uintptr_t address = SAVE_EVENT_EVENT_BASE_ADDRESS;
     uint32_t checksum = 0x00000000;
-    while (address < SAVE_EVENT_MEM_SIZE) {
+    for (uintptr_t address = SAVE_EVENT_EVENT_BASE_ADDRESS; address < eeprom_->length(); address++) {
         checksum += (uint32_t)eeprom_->read(address);
     }
     return checksum;

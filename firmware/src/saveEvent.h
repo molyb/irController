@@ -23,7 +23,7 @@ struct Event {
 
 class SaveEvent {
 public:
-    SaveEvent(EEPROMClass &eeprom);
+    SaveEvent(EEPROMClass *eeprom);
     bool checksumIsValid(void);
     void saveChecksum(void);
     void eraseAll(void);
