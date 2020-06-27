@@ -1,4 +1,5 @@
 #include "Arduino.h"
+#include <FS.h>
 
 #include "serverHandler.h"
 #include "eventHandler.h"
@@ -57,8 +58,18 @@ void setup() {
     } while (current_tm->tm_year + 1900 < 2000);
     Serial.println("");
     Serial.print((String)asctime(current_tm));
+    SPIFFS.begin();
 
-    server.on("/", handleRoot);
+    server.on("/", []() {
+        File index = SPIFFS.open("/index.html", "r");
+        if(!index) {
+            Serial.println("Fail: load index.html");
+        } else {
+            String html = index.readString();
+            index.close();
+            server.send(200, "text/html", html);
+        }
+    });
     server.onNotFound(handleNotFound);
     server.on("/temperature", handleTemperature);
     server.on("/light", handleLight);
