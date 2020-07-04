@@ -60,16 +60,7 @@ void setup() {
     Serial.print((String)asctime(current_tm));
     SPIFFS.begin();
 
-    server.on("/", []() {
-        File index = SPIFFS.open("/index.html", "r");
-        if(!index) {
-            Serial.println("Fail: load index.html");
-        } else {
-            String html = index.readString();
-            index.close();
-            server.send(200, "text/html", html);
-        }
-    });
+    server.on("/", handleRoot);
     server.onNotFound(handleNotFound);
     server.on("/temperature", handleTemperature);
     server.on("/light", handleLight);
