@@ -11,35 +11,15 @@
 const unsigned int ir_out_pin = IR_OUT_PIN;
 
 void handleRoot(void) {
-    String message = "\
-<html lang=\"ja\">\n\
-    <meta charset=\"utf-8\">\n\
-    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n\
-    <head>\n\
-        <title>IrController</title>\n\
-    </head>\
-    <body style=\"font-family: sans-serif; background-color: #ffffff;\" >\n\
-    <h1>IR Controller</h1>\n\
-    <p>\
-        <a href= \"temperature\">Monitor Temperature</a>\
-    </p>\
-    <p>\
-        <a href= \"light\">Light Controller</a>\
-    </p>\n\
-    <p>\
-        <a href= \"hitachi-ac\">Hitachi AC Controller</a>\
-    </p>\n\
-    </body>\
-</html>";
-    server.send(200, "text/html", message);
-}
-
-void handleTemperature(void) {
-    monitor.update();
-    float temperature = monitor.temperature();
-
-    String message = "temperature: " + (String)temperature + " [deg]";
-    server.send(200, "text/plain", message);
+    File index = SPIFFS.open("/index.html", "r");
+    if(!index) {
+        Serial.println("Fail: load index.html");
+        handleNotFound();
+        return;
+    }
+    String html = index.readString();
+    index.close();
+    server.send(200, "text/html", html);
 }
 
 
@@ -59,7 +39,26 @@ void handleNotFound(void) {
     server.send(404, "text/plain", message);
 }
 
+
+void handleTemperature(void) {
+    monitor.update();
+    float temperature = monitor.temperature();
+
+    String message = "temperature: " + (String)temperature + " [deg]";
+    server.send(200, "text/plain", message);
+}
+
+
 void handleLight(void) {
+    File index = SPIFFS.open("/light.html", "r");
+    if(!index) {
+        Serial.println("Fail: load light.html");
+        handleNotFound();
+        return;
+    }
+    String html = index.readString();
+    index.close();
+
     const uint64_t irPatternNecLightOn = 0x41B6659A;
     const uint64_t irPatternNecLightNight = 0x41b63dc2;
     const uint64_t irPatternNecLightOff = 0x41B67D82;
@@ -107,37 +106,7 @@ void handleLight(void) {
         return String("unknown");
     };
 
-    String header = "\
-<html lang=\"ja\">\n\
-    <meta charset=\"utf-8\">\n\
-    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n\
-    <head>\n\
-        <title>IrController</title>\n\
-    </head>";
-
-    String body = "\
-<body style=\"font-family: sans-serif; background-color: #ffffff;\" >\n\
-  <h1>Light Controller</h1>\n\
-  <p>";
-    body += "\
-    current state: " + state2str(state) + "\n";
-    body += "\
-    <form action='' method='post'>\n\
-      <button name='light' value='on'>On</button>\n\
-    </form>\n\
-    <form action='' method='post'>\n\
-      <button name='light' value='night'>Night</button>\n\
-    </form>\n\
-    <form action='' method='post'>\n\
-      <button name='light' value='off'>Off</button>\n\
-    </form>\n\
-  </p>\n\
-</body>\n";
-
-    String footer = "</html>\n";
-    String message = header + body + footer;
-
-    server.send(200, "text/html", message);
+    server.send(200, "text/html", html);
 }
 
 void handleHitachiAc(void) {
