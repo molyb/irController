@@ -1,13 +1,14 @@
 #include "serverHandler.h"
 #include "MonitorTemperature.h"
 // https://github.com/markszabo/IRremoteESP8266
+#include <EEPROM.h>
 #include <IRremoteESP8266.h>
 #include <IRsend.h>
 #include <IRrecv.h>
 #include <ir_hitachi.h>
-#include "parameters.h"
 #include <ArduinoJson.h>
-
+#include "parameters.h"
+#include "saveEvent.h"
 
 const unsigned int ir_out_pin = IR_OUT_PIN;
 
@@ -236,10 +237,38 @@ void handleHitachiAc(void) {
     server.send(200, "text/html", message);
 }
 
+// 以下のようなjsonファイルを生成する事を想定している
+//{
+//    "title": "over written title",
+//    "events": [
+//        {
+//            "function_name": "func0",
+//            "hour": 6,
+//            "minute": 30
+//        },
+//        {
+//            "function_name": "func1",
+//            "hour": 8,
+//            "minute": 0
+//        }
+//    ]
+//}
 void handleConfig(void) {
+    SaveEvent events(&EEPROM);
+    std::list<Event> registered_events = events.get();
+
     StaticJsonDocument<256> doc;
     JsonObject root = doc.to<JsonObject>();
     root["title"] = "over written title";
+    JsonArray event_writer = root.createNestedArray("events");
+
+    for_each (registered_events.begin(), registered_events.end(), [event_writer](Event event) {
+        JsonObject event_obj = event_writer.createNestedObject();
+        event_obj["function_name"] = event.func_name;
+        event_obj["hour"] = event.hour;
+        event_obj["minute"] = event.minute;
+    });
+
     String response;
     serializeJson(doc, response);
     server.send(200, "application/json", response);
