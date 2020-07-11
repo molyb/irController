@@ -65,6 +65,7 @@ void setup() {
     server.on("/temperature", handleTemperature);
     server.on("/light", handleLight);
     server.on("/hitachi-ac", handleHitachiAc);
+    server.on("/config", handleConfig);
     server.begin();
     Serial.println("HTTP Server started");
 

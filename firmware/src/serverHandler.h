@@ -16,5 +16,6 @@ void handleTemperature(void);
 void handleNotFound(void);
 void handleLight(void);
 void handleHitachiAc(void);
+void handleConfig(void);
 
 #endif //FIRMWARE_SERVERHANDLER_H

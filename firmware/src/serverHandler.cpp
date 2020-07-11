@@ -6,6 +6,7 @@
 #include <IRrecv.h>
 #include <ir_hitachi.h>
 #include "parameters.h"
+#include <ArduinoJson.h>
 
 
 const unsigned int ir_out_pin = IR_OUT_PIN;
@@ -24,6 +25,28 @@ void handleRoot(void) {
 
 
 void handleNotFound(void) {
+    // 内部ファイルシステムにファイルがあればリード
+    String path = server.uri();
+    if (SPIFFS.exists(path)) {
+        File file = SPIFFS.open(path, "r");
+        auto convertMimeType = [](String filename) -> String {
+            if(filename.endsWith(".htm")) return "text/html";
+            else if(filename.endsWith(".html")) return "text/html";
+            else if(filename.endsWith(".css")) return "text/css";
+            else if(filename.endsWith(".js")) return "application/javascript";
+            else if(filename.endsWith(".png")) return "image/png";
+            else if(filename.endsWith(".gif")) return "image/gif";
+            else if(filename.endsWith(".jpg")) return "image/jpeg";
+            else if(filename.endsWith(".ico")) return "image/x-icon";
+            else if(filename.endsWith(".xml")) return "text/xml";
+            return "text/plain";
+        };
+        String contentType = convertMimeType(path);
+        server.streamFile(file, contentType);
+        file.close();
+        return;
+    }
+
     String message = "File Not Found\n\n";
     message += "URI: ";
     message += server.uri();
@@ -74,7 +97,7 @@ void handleLight(void) {
         night,
         off
     };
-    enum State state = unknown;
+    __unused enum State state = unknown;
     //  LED の制御(server.method()でメソッドごとの処理を切り替えられるが今は同じにしておく)
     String val = server.arg("light");
     if (val == "on") {
@@ -93,7 +116,7 @@ void handleLight(void) {
         ;
     }
 
-    auto state2str = [](enum State state) {
+    __unused auto state2str = [](enum State state) {
         if (state == on) {
             return String("on");
         } else if (state == night) {
@@ -211,4 +234,13 @@ void handleHitachiAc(void) {
 
     // HTTPステータスコード(200) リクエストの成功
     server.send(200, "text/html", message);
+}
+
+void handleConfig(void) {
+    StaticJsonDocument<256> doc;
+    JsonObject root = doc.to<JsonObject>();
+    root["title"] = "over written title";
+    String response;
+    serializeJson(doc, response);
+    server.send(200, "application/json", response);
 }
