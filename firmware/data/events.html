@@ -5,8 +5,28 @@
 <head>
     <meta charset="UTF-8">
     <title>Config Events</title>
+
 </head>
 <body>
-<p id="event_pos"></p>
+
+<form action="config" method="POST">
+    <p id="event_pos"></p>
+    <p id="delete_request">
+        <input type="submit" value="delete">
+    </p>
+</form>
+<hr>
+<form action="config" method="POST">
+    <p id="add_request">
+        <input type="time" name="register_time">
+        <select name="register_event">
+            <option value="autoAcOn">autoAcOn</option>
+            <option value="autoAcOff">autoAcOff</option>
+        </select>
+    </p>
+    <p>
+        <input type="submit" value="add">
+    </p>
+</form>
 </body>
 </html>

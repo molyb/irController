@@ -1,5 +1,5 @@
 function createCheckbox(hour, minute, name, value) {
-    return "<p> <input type = \'checkbox\' name=\'event\' value=\'" + value + "\'>"
+    return "<p> <input type = \'checkbox\' name=\'delete_index\' value=\'" + value + "\'>"
         + hour + ":"  + minute + " " + name + "</p>";
 }
 

@@ -9,6 +9,7 @@
 #include <ArduinoJson.h>
 #include "parameters.h"
 #include "saveEvent.h"
+#include "eventHandler.h"
 
 const unsigned int ir_out_pin = IR_OUT_PIN;
 
@@ -237,6 +238,8 @@ void handleHitachiAc(void) {
     server.send(200, "text/html", message);
 }
 
+
+
 // 以下のようなjsonファイルを生成する事を想定している
 //{
 //    "title": "over written title",
@@ -255,18 +258,46 @@ void handleHitachiAc(void) {
 //}
 void handleConfig(void) {
     SaveEvent events(&EEPROM);
-    std::list<Event> registered_events = events.get();
+    if (server.method() == HTTP_POST) {
+        // 同じname属性で複数の値を投げる実装になっているのでループを回して全部の引数について調査する
+        for (int i = 0; i < server.args(); i++) {
+            if (server.argName(i) == String("delete_index")) {
+                Serial.print("delete_index:");
+                Serial.println(server.arg(i));
+                events.erase(server.arg(i).toInt());
+            } else if (server.argName(i) == String("register_event")) {
+                String function_name = server.arg(i);
+                String time = server.arg("register_time");
+                int hour = time.substring(0, time.indexOf(":")).toInt();
+                int minute = time.substring(time.indexOf(":") + 1).toInt();
+                events.push(function_name, event_functions[function_name], hour, minute);
+            }
+        }
+        String file_path = "/events.html";
+        if (SPIFFS.exists(file_path)) {
+            File file = SPIFFS.open(file_path, "r");
+            server.streamFile(file, "text/html");
+            file.close();
+            return;
+        }
+    }
 
-    StaticJsonDocument<256> doc;
+    std::list<Event> registered_events = events.get();
+    StaticJsonDocument<1024> doc;
     JsonObject root = doc.to<JsonObject>();
     root["title"] = "over written title";
     JsonArray event_writer = root.createNestedArray("events");
 
-    for_each (registered_events.begin(), registered_events.end(), [event_writer](Event event) {
+    for_each (registered_events.begin(), registered_events.end(), [&](Event event) {
         JsonObject event_obj = event_writer.createNestedObject();
         event_obj["function_name"] = event.func_name;
         event_obj["hour"] = event.hour;
         event_obj["minute"] = event.minute;
+        Serial.print(event.func_name);
+        Serial.print("_");
+        Serial.print(event.hour);
+        Serial.print(":");
+        Serial.println(event.minute);
     });
 
     String response;

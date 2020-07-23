@@ -75,34 +75,32 @@ void setup() {
     Serial.print(monitor.temperature(), 3);
     Serial.println("");
 
+    event_functions.insert(std::make_pair("autoAcOn", autoAcOn));
+    event_functions.insert(std::make_pair("autoAcOff", autoAcOff));
+
 //    uploader.enable(ambient_channel_id, ambient_write_key, AMBIENT_UPDATE_INTERVAL_SEC);
     EEPROM.begin(1024);
     SaveEvent events(&EEPROM);
 
     if (!events.checksumIsValid()) {
-        Serial.println("eeprom is erased all.");
         events.eraseAll();
+        Serial.println("eeprom is erased all.");
         Serial.println("register default events.");
-        events.push("autoAcOn", autoAcOn, 6, 30);
-        events.push("autoAcOff", autoAcOff, 8, 00);
-        events.push("autoAcOn", autoAcOn, 18, 30);
+        events.push("autoAcOn", event_functions["autoAcOn"], 6, 30);
+        events.push("autoAcOff", event_functions["autoAcOff"], 8, 00);
+        events.push("autoAcOn", event_functions["autoAcOn"], 18, 30);
     }
     std::list<Event> event_list = events.get();
-    Serial.println(String(event_list.begin()->func_name));
-    Serial.println(String(event_list.begin()->hour));
-    Serial.println(String(event_list.begin()->minute));
     for_each (event_list.begin(), event_list.end(), [](Event event) {
         if (event.func != NULL) {
-            Serial.println(event.func_name);
-            Serial.println(event.hour);
+            Serial.print(event.func_name);
+            Serial.print(": ");
+            Serial.print(event.hour);
+            Serial.print(":");
             Serial.println(event.minute);
-            Serial.println("");
             rtc.append(event.hour, event.minute, event.func);
         }
     });
-//    rtc.append(6, 30, autoAcOn);
-//    rtc.append(8, 00, autoAcOff);
-//    rtc.append(18, 30, autoAcOn);
     rtc.ready();
 }
 
