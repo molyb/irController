@@ -41,7 +41,8 @@ void SaveEvent::erase(uint16_t index) {
     initEvent(event);
     // put関数内に範囲チェックあるのでそちらに任せる
     eeprom_->put<Event>(SAVE_EVENT_EVENT_BASE_ADDRESS + sizeof(Event) * index, event);
-    eeprom_->commit();
+    // 保存処理はsaveChecksumの内部にあるのでそちらで一括処理する
+    saveChecksum();
 }
 
 
