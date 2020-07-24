@@ -25,15 +25,18 @@ class SaveEvent {
 public:
     SaveEvent(EEPROMClass *eeprom);
     bool checksumIsValid(void);
-    void saveChecksum(void);
+    bool saveChecksum(void);
     void eraseAll(void);
-    void erase(uint16_t index);
+    // 登録済みのイベント数に応じたインデックスでerase
+    bool erase(uint16_t registered_event_index);
     bool push(String func_name, void (*func)(void), uint8_t hour, uint8_t minute);
     std::list<Event> get(void);
 
 private:
     uint32_t calcChecksum(void);
     void initEvent(Event &event);
+    // eeprom内部の物理配置に応じてerase
+    bool eraseInternalIndex(uint16_t index);
     void save(uint16_t index, String func_name, void (*func)(void), uint8_t hour, uint8_t minute);
     EEPROMClass *eeprom_;
     uint16_t save_event_max_;

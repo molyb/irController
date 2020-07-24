@@ -22,9 +22,9 @@ bool SaveEvent::checksumIsValid(void) {
 }
 
 
-void SaveEvent::saveChecksum(void) {
+bool SaveEvent::saveChecksum(void) {
     eeprom_->put<uint32_t>(SAVE_EVENT_CHECKSUM_ADDRESS, calcChecksum());
-    eeprom_->commit();
+    return eeprom_->commit();
 }
 
 
@@ -36,13 +36,24 @@ void SaveEvent::eraseAll(void) {
 }
 
 
-void SaveEvent::erase(uint16_t index) {
-    Event event;
-    initEvent(event);
-    // put関数内に範囲チェックあるのでそちらに任せる
-    eeprom_->put<Event>(SAVE_EVENT_EVENT_BASE_ADDRESS + sizeof(Event) * index, event);
-    // 保存処理はsaveChecksumの内部にあるのでそちらで一括処理する
-    saveChecksum();
+bool SaveEvent::erase(uint16_t registered_event_index) {
+    if (save_event_max_ <= registered_event_index) {
+        return false;
+    }
+    uint16_t registered_event_counter = 0;
+    for (uint16_t i = 0; i < save_event_max_; i++) {
+        Event event;
+        eeprom_->get<Event>(SAVE_EVENT_EVENT_BASE_ADDRESS + sizeof(Event) * i, event);
+        if (event.func == NULL) {
+            continue;
+        }
+        if (registered_event_counter == registered_event_index) {
+            return eraseInternalIndex(i);
+        } else {
+            registered_event_counter++;
+        }
+    }
+    return false;
 }
 
 
@@ -89,6 +100,19 @@ void SaveEvent::initEvent(Event &event) {
         event.func_name[i] = '\0';
     }
     event.func = NULL;
+}
+
+
+bool SaveEvent::eraseInternalIndex(uint16_t index) {
+    if (save_event_max_ <= index) {
+        return false;
+    }
+    Event event;
+    initEvent(event);
+    // put関数内に範囲チェックあるのでそちらに任せる
+    eeprom_->put<Event>(SAVE_EVENT_EVENT_BASE_ADDRESS + sizeof(Event) * index, event);
+    // 保存処理はsaveChecksumの内部にあるのでそちらで一括処理する
+    return saveChecksum();
 }
 
 
