@@ -93,11 +93,6 @@ void setup() {
     std::list<Event> event_list = events.get();
     for_each (event_list.begin(), event_list.end(), [](Event event) {
         if (event.func != NULL) {
-            Serial.print(event.func_name);
-            Serial.print(": ");
-            Serial.print(event.hour);
-            Serial.print(":");
-            Serial.println(event.minute);
             rtc.append(event.hour, event.minute, event.func);
         }
     });

@@ -264,8 +264,6 @@ void handleConfig(void) {
         // 同じname属性で複数の値を投げる実装になっているのでループを回して全部の引数について調査する
         for (int i = 0; i < server.args(); i++) {
             if (server.argName(i) == String("delete_index")) {
-                Serial.print("delete_index:");
-                Serial.println(server.arg(i));
                 events.erase(server.arg(i).toInt());
             } else if (server.argName(i) == String("register_event")) {
                 String function_name = server.arg(i);
@@ -305,11 +303,6 @@ void handleConfig(void) {
         event_obj["function_name"] = event.func_name;
         event_obj["hour"] = event.hour;
         event_obj["minute"] = event.minute;
-        Serial.print(event.func_name);
-        Serial.print("_");
-        Serial.print(event.hour);
-        Serial.print(":");
-        Serial.println(event.minute);
     });
 
     String response;
