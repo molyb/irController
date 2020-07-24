@@ -10,6 +10,7 @@
 class RtcEvent {
 public:
     RtcEvent(void);
+    void clear(void);
     bool append(uint8_t hour_24, uint8_t minute, std::function<void(void)> callback);
     std::pair<time_t, std::function<void(void)>> isAppended(uint8_t index);
     bool ready(void);
@@ -19,7 +20,6 @@ private:
     void callbackRelay(void);
     void callbackAgent(void);
     std::function<void(void)> callback_;
-    bool is_readied_;
 };
 
 

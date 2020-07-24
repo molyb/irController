@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="js/viewEvents.js"></script>
+<head>
+    <meta charset="UTF-8">
+    <title>Config Events</title>
+
+</head>
+<body>
+
+<form action="config" method="POST">
+    <p id="event_pos"></p>
+    <p id="delete_request">
+        <input type="submit" value="delete">
+    </p>
+</form>
+<hr>
+<form action="config" method="POST">
+    <p id="add_request">
+        <label>
+            <input type="time" name="register_time">
+        </label>
+        <label>
+            <select name="register_event">
+                <option value="autoAcOn">autoAcOn</option>
+                <option value="autoAcOff">autoAcOff</option>
+            </select>
+        </label>
+    </p>
+    <p>
+        <input type="submit" value="add">
+    </p>
+</form>
+<p>
+    <a href= "index.html">Top Page</a>
+</p>
+</body>
+</html>

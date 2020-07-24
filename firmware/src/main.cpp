@@ -1,10 +1,12 @@
 #include "Arduino.h"
+#include <FS.h>
+#include <EEPROM.h>
 
 #include "serverHandler.h"
 #include "eventHandler.h"
 #include "Uploader.h"
 #include "RtcEvent.h"
-
+#include "saveEvent.h"
 
 #define JST (3600 * 9)
 #define AMBIENT_UPDATE_INTERVAL_SEC (5 * 60)
@@ -57,12 +59,14 @@ void setup() {
     } while (current_tm->tm_year + 1900 < 2000);
     Serial.println("");
     Serial.print((String)asctime(current_tm));
+    SPIFFS.begin();
 
     server.on("/", handleRoot);
     server.onNotFound(handleNotFound);
     server.on("/temperature", handleTemperature);
     server.on("/light", handleLight);
     server.on("/hitachi-ac", handleHitachiAc);
+    server.on("/config", handleConfig);
     server.begin();
     Serial.println("HTTP Server started");
 
@@ -71,11 +75,27 @@ void setup() {
     Serial.print(monitor.temperature(), 3);
     Serial.println("");
 
-    uploader.enable(ambient_channel_id, ambient_write_key, AMBIENT_UPDATE_INTERVAL_SEC);
+    event_functions.insert(std::make_pair("autoAcOn", autoAcOn));
+    event_functions.insert(std::make_pair("autoAcOff", autoAcOff));
 
-    rtc.append(6, 30, autoAcOn);
-    rtc.append(8, 00, autoAcOff);
-    rtc.append(18, 30, autoAcOn);
+//    uploader.enable(ambient_channel_id, ambient_write_key, AMBIENT_UPDATE_INTERVAL_SEC);
+    EEPROM.begin(1024);
+    SaveEvent events(&EEPROM);
+
+    if (!events.checksumIsValid()) {
+        events.eraseAll();
+        Serial.println("eeprom is erased all.");
+        Serial.println("register default events.");
+        events.push("autoAcOn", event_functions["autoAcOn"], 6, 30);
+        events.push("autoAcOff", event_functions["autoAcOff"], 8, 00);
+        events.push("autoAcOn", event_functions["autoAcOn"], 18, 30);
+    }
+    std::list<Event> event_list = events.get();
+    for_each (event_list.begin(), event_list.end(), [](Event event) {
+        if (event.func != NULL) {
+            rtc.append(event.hour, event.minute, event.func);
+        }
+    });
     rtc.ready();
 }
 

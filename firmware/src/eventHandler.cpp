@@ -48,3 +48,5 @@ void autoAcOff(void) {
     Serial.println(ac.toString());
     acNotification(false, 0, 0);
 }
+
+std::map<String, void (*)(void)> event_functions;

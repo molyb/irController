@@ -1,49 +1,56 @@
 #include "serverHandler.h"
 #include "MonitorTemperature.h"
 // https://github.com/markszabo/IRremoteESP8266
+#include <EEPROM.h>
 #include <IRremoteESP8266.h>
 #include <IRsend.h>
 #include <IRrecv.h>
 #include <ir_hitachi.h>
+#include <ArduinoJson.h>
 #include "parameters.h"
-
+#include "saveEvent.h"
+#include "eventHandler.h"
+#include "RtcEvent.h"
 
 const unsigned int ir_out_pin = IR_OUT_PIN;
+extern RtcEvent rtc;
 
 void handleRoot(void) {
-    String message = "\
-<html lang=\"ja\">\n\
-    <meta charset=\"utf-8\">\n\
-    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n\
-    <head>\n\
-        <title>IrController</title>\n\
-    </head>\
-    <body style=\"font-family: sans-serif; background-color: #ffffff;\" >\n\
-    <h1>IR Controller</h1>\n\
-    <p>\
-        <a href= \"temperature\">Monitor Temperature</a>\
-    </p>\
-    <p>\
-        <a href= \"light\">Light Controller</a>\
-    </p>\n\
-    <p>\
-        <a href= \"hitachi-ac\">Hitachi AC Controller</a>\
-    </p>\n\
-    </body>\
-</html>";
-    server.send(200, "text/html", message);
-}
-
-void handleTemperature(void) {
-    monitor.update();
-    float temperature = monitor.temperature();
-
-    String message = "temperature: " + (String)temperature + " [deg]";
-    server.send(200, "text/plain", message);
+    File index = SPIFFS.open("/index.html", "r");
+    if(!index) {
+        Serial.println("Fail: load index.html");
+        handleNotFound();
+        return;
+    }
+    String html = index.readString();
+    index.close();
+    server.send(200, "text/html", html);
 }
 
 
 void handleNotFound(void) {
+    // 内部ファイルシステムにファイルがあればリード
+    String path = server.uri();
+    if (SPIFFS.exists(path)) {
+        File file = SPIFFS.open(path, "r");
+        auto convertMimeType = [](String filename) -> String {
+            if(filename.endsWith(".htm")) return "text/html";
+            else if(filename.endsWith(".html")) return "text/html";
+            else if(filename.endsWith(".css")) return "text/css";
+            else if(filename.endsWith(".js")) return "application/javascript";
+            else if(filename.endsWith(".png")) return "image/png";
+            else if(filename.endsWith(".gif")) return "image/gif";
+            else if(filename.endsWith(".jpg")) return "image/jpeg";
+            else if(filename.endsWith(".ico")) return "image/x-icon";
+            else if(filename.endsWith(".xml")) return "text/xml";
+            return "text/plain";
+        };
+        String contentType = convertMimeType(path);
+        server.streamFile(file, contentType);
+        file.close();
+        return;
+    }
+
     String message = "File Not Found\n\n";
     message += "URI: ";
     message += server.uri();
@@ -59,7 +66,26 @@ void handleNotFound(void) {
     server.send(404, "text/plain", message);
 }
 
+
+void handleTemperature(void) {
+    monitor.update();
+    float temperature = monitor.temperature();
+
+    String message = "temperature: " + (String)temperature + " [deg]";
+    server.send(200, "text/plain", message);
+}
+
+
 void handleLight(void) {
+    File index = SPIFFS.open("/light.html", "r");
+    if(!index) {
+        Serial.println("Fail: load light.html");
+        handleNotFound();
+        return;
+    }
+    String html = index.readString();
+    index.close();
+
     const uint64_t irPatternNecLightOn = 0x41B6659A;
     const uint64_t irPatternNecLightNight = 0x41b63dc2;
     const uint64_t irPatternNecLightOff = 0x41B67D82;
@@ -75,7 +101,7 @@ void handleLight(void) {
         night,
         off
     };
-    enum State state = unknown;
+    __unused enum State state = unknown;
     //  LED の制御(server.method()でメソッドごとの処理を切り替えられるが今は同じにしておく)
     String val = server.arg("light");
     if (val == "on") {
@@ -94,7 +120,7 @@ void handleLight(void) {
         ;
     }
 
-    auto state2str = [](enum State state) {
+    __unused auto state2str = [](enum State state) {
         if (state == on) {
             return String("on");
         } else if (state == night) {
@@ -107,37 +133,7 @@ void handleLight(void) {
         return String("unknown");
     };
 
-    String header = "\
-<html lang=\"ja\">\n\
-    <meta charset=\"utf-8\">\n\
-    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n\
-    <head>\n\
-        <title>IrController</title>\n\
-    </head>";
-
-    String body = "\
-<body style=\"font-family: sans-serif; background-color: #ffffff;\" >\n\
-  <h1>Light Controller</h1>\n\
-  <p>";
-    body += "\
-    current state: " + state2str(state) + "\n";
-    body += "\
-    <form action='' method='post'>\n\
-      <button name='light' value='on'>On</button>\n\
-    </form>\n\
-    <form action='' method='post'>\n\
-      <button name='light' value='night'>Night</button>\n\
-    </form>\n\
-    <form action='' method='post'>\n\
-      <button name='light' value='off'>Off</button>\n\
-    </form>\n\
-  </p>\n\
-</body>\n";
-
-    String footer = "</html>\n";
-    String message = header + body + footer;
-
-    server.send(200, "text/html", message);
+    server.send(200, "text/html", html);
 }
 
 void handleHitachiAc(void) {
@@ -242,4 +238,74 @@ void handleHitachiAc(void) {
 
     // HTTPステータスコード(200) リクエストの成功
     server.send(200, "text/html", message);
+}
+
+
+
+// 以下のようなjsonファイルを生成する事を想定している
+//{
+//    "title": "over written title",
+//    "events": [
+//        {
+//            "function_name": "func0",
+//            "hour": 6,
+//            "minute": 30
+//        },
+//        {
+//            "function_name": "func1",
+//            "hour": 8,
+//            "minute": 0
+//        }
+//    ]
+//}
+void handleConfig(void) {
+    SaveEvent events(&EEPROM);
+    if (server.method() == HTTP_POST) {
+        // 同じname属性で複数の値を投げる実装になっているのでループを回して全部の引数について調査する
+        for (int i = 0; i < server.args(); i++) {
+            if (server.argName(i) == String("delete_index")) {
+                events.erase(server.arg(i).toInt());
+            } else if (server.argName(i) == String("register_event")) {
+                String function_name = server.arg(i);
+                String time = server.arg("register_time");
+                int hour = time.substring(0, time.indexOf(":")).toInt();
+                int minute = time.substring(time.indexOf(":") + 1).toInt();
+                events.push(function_name, event_functions[function_name], hour, minute);
+            }
+        }
+
+        rtc.clear();
+        std::list<Event> event_list = events.get();
+        for_each (event_list.begin(), event_list.end(), [](Event event) {
+            if (event.func != NULL) {
+                rtc.append(event.hour, event.minute, event.func);
+            }
+        });
+        rtc.ready();
+
+        String file_path = "/events.html";
+        if (SPIFFS.exists(file_path)) {
+            File file = SPIFFS.open(file_path, "r");
+            server.streamFile(file, "text/html");
+            file.close();
+            return;
+        }
+    }
+
+    std::list<Event> registered_events = events.get();
+    StaticJsonDocument<1024> doc;
+    JsonObject root = doc.to<JsonObject>();
+    root["title"] = "over written title";
+    JsonArray event_writer = root.createNestedArray("events");
+
+    for_each (registered_events.begin(), registered_events.end(), [&](Event event) {
+        JsonObject event_obj = event_writer.createNestedObject();
+        event_obj["function_name"] = event.func_name;
+        event_obj["hour"] = event.hour;
+        event_obj["minute"] = event.minute;
+    });
+
+    String response;
+    serializeJson(doc, response);
+    server.send(200, "application/json", response);
 }
