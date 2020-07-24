@@ -17,6 +17,11 @@ RtcEvent::RtcEvent(void) {
 }
 
 
+void RtcEvent::clear(void) {
+    times_.clear();
+}
+
+
 bool RtcEvent::append(uint8_t hour_24, uint8_t minute, std::function<void(void)> callback) {
     if (23 < hour_24 || 59 < minute) {
         return false;
@@ -45,9 +50,12 @@ bool RtcEvent::append(uint8_t hour_24, uint8_t minute, std::function<void(void)>
 
 
 bool RtcEvent::ready(void) {
-    if (times_.empty() || is_readied_) {
+    // イベントの削除処理後にも本関数が呼ばれるためtimes_が空かに依らずでタッチしておく
+    ticker_.detach();
+    if (times_.empty()) {
         return false;
     }
+
     time_t current_time;
     struct tm *current_tm;
 
@@ -57,8 +65,6 @@ bool RtcEvent::ready(void) {
     current_tm->tm_mon = 0;
     current_tm->tm_mday = 1;
     current_time = mktime(current_tm);
-
-    Serial.print("current: " + (String) asctime(current_tm));
 
     auto itr = times_.begin();
     double tick_sec = 0;
@@ -82,7 +88,6 @@ bool RtcEvent::ready(void) {
         Serial.println(tick_sec);
     }
 
-    is_readied_ = true;
     callback_ = itr->second;
     if ((CALLBACK_RELAY_INTERVAL_SEC + CALLBACK_RELAY_OFFSET_SEC) < tick_sec) {
         ticker_.once_scheduled(CALLBACK_RELAY_INTERVAL_SEC, std::bind(&RtcEvent::callbackRelay, this));
@@ -96,13 +101,11 @@ bool RtcEvent::ready(void) {
 // ESP8266 Non-OS SDKのソフトタイマ許容時間（約114分）以上の時間間隔でのコールバックが必要な際、
 // コールバックを再設定するための関数
 void RtcEvent::callbackRelay(void) {
-    is_readied_ = false;
     ready();  // 次回用に再度設定
 }
 
 
 void RtcEvent::callbackAgent(void) {
-    is_readied_ = false;
     if (callback_ != NULL) {
         callback_();
         callback_ = NULL;

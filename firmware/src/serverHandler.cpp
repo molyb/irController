@@ -10,8 +10,10 @@
 #include "parameters.h"
 #include "saveEvent.h"
 #include "eventHandler.h"
+#include "RtcEvent.h"
 
 const unsigned int ir_out_pin = IR_OUT_PIN;
+extern RtcEvent rtc;
 
 void handleRoot(void) {
     File index = SPIFFS.open("/index.html", "r");
@@ -273,6 +275,16 @@ void handleConfig(void) {
                 events.push(function_name, event_functions[function_name], hour, minute);
             }
         }
+
+        rtc.clear();
+        std::list<Event> event_list = events.get();
+        for_each (event_list.begin(), event_list.end(), [](Event event) {
+            if (event.func != NULL) {
+                rtc.append(event.hour, event.minute, event.func);
+            }
+        });
+        rtc.ready();
+
         String file_path = "/events.html";
         if (SPIFFS.exists(file_path)) {
             File file = SPIFFS.open(file_path, "r");
