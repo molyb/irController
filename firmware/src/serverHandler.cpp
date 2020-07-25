@@ -241,7 +241,6 @@ void handleHitachiAc(void) {
 }
 
 
-
 // 以下のようなjsonファイルを生成する事を想定している
 //{
 //    "title": "over written title",
@@ -260,56 +259,12 @@ void handleHitachiAc(void) {
 //        }
 //    ]
 //}
-void handleConfig(void) {
+static void handleConfigGet(void) {
     SaveEvent events(&EEPROM);
-    if (server.method() == HTTP_POST) {
-        if (server.hasArg("register_event")) {
-            String function_name = server.arg("register_event");
-            String time = server.arg("register_time");
-            int hour = time.substring(0, time.indexOf(":")).toInt();
-            int minute = time.substring(time.indexOf(":") + 1).toInt();
-            bool weekday[NUMBER_OF_WEEKDAY] = {false, false, false, false, false, false, false};
-            for (int i = 0; i < server.args(); i++) {
-                if (server.argName(i) == String("weekday")) {
-                    weekday[String(server.arg(i)).toInt()] = true;
-                }
-            }
-            for (bool i : weekday) {
-                Serial.print(i);
-            }
-            Serial.println("");
-            events.push(function_name, event_functions[function_name], hour, minute, weekday);
-        }
-
-        // 同じname属性で複数の値を投げる実装になっているのでループを回して全部の引数について調査する
-        for (int i = 0; i < server.args(); i++) {
-            if (server.argName(i) == String("delete_index")) {
-                events.erase(server.arg(i).toInt());
-            }
-        }
-
-        rtc.clear();
-        std::list<Event> event_list = events.get();
-        for_each (event_list.begin(), event_list.end(), [](Event event) {
-            if (event.func != NULL) {
-                rtc.append(event.hour, event.minute, event.func);
-            }
-        });
-        rtc.ready();
-
-        String file_path = "/events.html";
-        if (SPIFFS.exists(file_path)) {
-            File file = SPIFFS.open(file_path, "r");
-            server.streamFile(file, "text/html");
-            file.close();
-            return;
-        }
-    }
-
     std::list<Event> registered_events = events.get();
     StaticJsonDocument<1024> doc;
     JsonObject root = doc.to<JsonObject>();
-    root["title"] = "over written title";
+    root["title"] = "IR Controller Config";
     JsonArray event_writer = root.createNestedArray("events");
 
     for_each (registered_events.begin(), registered_events.end(), [&](Event event) {
@@ -326,4 +281,55 @@ void handleConfig(void) {
     String response;
     serializeJson(doc, response);
     server.send(200, "application/json", response);
+}
+
+
+static void handleConfigPost(void) {
+    SaveEvent events(&EEPROM);
+    if (server.hasArg("register_event")) {
+        String function_name = server.arg("register_event");
+        String time = server.arg("register_time");
+        int hour = time.substring(0, time.indexOf(":")).toInt();
+        int minute = time.substring(time.indexOf(":") + 1).toInt();
+        bool weekday[NUMBER_OF_WEEKDAY] = {false, false, false, false, false, false, false};
+        for (int i = 0; i < server.args(); i++) {
+            if (server.argName(i) == String("weekday")) {
+                weekday[String(server.arg(i)).toInt()] = true;
+            }
+        }
+        events.push(function_name, event_functions[function_name], hour, minute, weekday);
+    }
+
+    // 同じname属性で複数の値を投げる実装になっているのでループを回して全部の引数について調査する
+    for (int i = 0; i < server.args(); i++) {
+        if (server.argName(i) == String("delete_index")) {
+            events.erase(server.arg(i).toInt());
+        }
+    }
+
+    rtc.clear();
+    std::list<Event> event_list = events.get();
+    for_each (event_list.begin(), event_list.end(), [](Event event) {
+        if (event.func != NULL) {
+            rtc.append(event.hour, event.minute, event.func);
+        }
+    });
+    rtc.ready();
+
+    String file_path = "/events.html";
+    if (!SPIFFS.exists(file_path)) {
+        return handleConfigGet();
+    }
+    File file = SPIFFS.open(file_path, "r");
+    server.streamFile(file, "text/html");
+    file.close();
+}
+
+
+void handleConfig(void) {
+    if (server.method() == HTTP_POST) {
+        return handleConfigPost();
+    } else {
+        return handleConfigGet();
+    }
 }
