@@ -15,6 +15,8 @@
 const unsigned int ir_out_pin = IR_OUT_PIN;
 extern RtcEvent rtc;
 
+#define JSON_CAPACITY 2048
+
 void handleRoot(void) {
     File index = SPIFFS.open("/index.html", "r");
     if(!index) {
@@ -262,13 +264,17 @@ void handleHitachiAc(void) {
 static void handleConfigGet(void) {
     SaveEvent events(&EEPROM);
     std::list<Event> registered_events = events.get();
-    StaticJsonDocument<1024> doc;
+    DynamicJsonDocument doc(JSON_CAPACITY);
     JsonObject root = doc.to<JsonObject>();
     root["title"] = "IR Controller Config";
     JsonArray event_writer = root.createNestedArray("events");
 
     for_each (registered_events.begin(), registered_events.end(), [&](Event event) {
         JsonObject event_obj = event_writer.createNestedObject();
+        if (event_obj.isNull()) {
+            Serial.println("json memory is full.");
+            return;
+        }
         event_obj["function_name"] = event.func_name;
         event_obj["hour"] = event.hour;
         event_obj["minute"] = event.minute;
