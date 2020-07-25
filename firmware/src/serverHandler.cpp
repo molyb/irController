@@ -249,28 +249,42 @@ void handleHitachiAc(void) {
 //        {
 //            "function_name": "func0",
 //            "hour": 6,
-//            "minute": 30
+//            "minute": 30,
+//            "weekday": [true, false, false, false, false, false, true]
 //        },
 //        {
 //            "function_name": "func1",
 //            "hour": 8,
-//            "minute": 0
+//            "minute": 0,
+//            "weekday": [true, true, true, true, true, true, true]
 //        }
 //    ]
 //}
 void handleConfig(void) {
     SaveEvent events(&EEPROM);
     if (server.method() == HTTP_POST) {
+        if (server.hasArg("register_event")) {
+            String function_name = server.arg("register_event");
+            String time = server.arg("register_time");
+            int hour = time.substring(0, time.indexOf(":")).toInt();
+            int minute = time.substring(time.indexOf(":") + 1).toInt();
+            bool weekday[NUMBER_OF_WEEKDAY] = {false, false, false, false, false, false, false};
+            for (int i = 0; i < server.args(); i++) {
+                if (server.argName(i) == String("weekday")) {
+                    weekday[String(server.arg(i)).toInt()] = true;
+                }
+            }
+            for (bool i : weekday) {
+                Serial.print(i);
+            }
+            Serial.println("");
+            events.push(function_name, event_functions[function_name], hour, minute, weekday);
+        }
+
         // 同じname属性で複数の値を投げる実装になっているのでループを回して全部の引数について調査する
         for (int i = 0; i < server.args(); i++) {
             if (server.argName(i) == String("delete_index")) {
                 events.erase(server.arg(i).toInt());
-            } else if (server.argName(i) == String("register_event")) {
-                String function_name = server.arg(i);
-                String time = server.arg("register_time");
-                int hour = time.substring(0, time.indexOf(":")).toInt();
-                int minute = time.substring(time.indexOf(":") + 1).toInt();
-                events.push(function_name, event_functions[function_name], hour, minute);
             }
         }
 
@@ -303,6 +317,10 @@ void handleConfig(void) {
         event_obj["function_name"] = event.func_name;
         event_obj["hour"] = event.hour;
         event_obj["minute"] = event.minute;
+        JsonArray event_array = event_obj.createNestedArray("weekday");
+        for (bool i : event.weekday) {
+            event_array.add(i ? "true" : "false");
+        }
     });
 
     String response;
