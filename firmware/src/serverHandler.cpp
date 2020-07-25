@@ -286,35 +286,43 @@ static void handleConfigGet(void) {
 
 static void handleConfigPost(void) {
     SaveEvent events(&EEPROM);
-    if (server.hasArg("register_event")) {
+    bool update_request = false;
+    // イベント追加処理 週の設定が無い場合は登録しない
+    if (server.hasArg("register_event") && server.hasArg("weekday")) {
         String function_name = server.arg("register_event");
         String time = server.arg("register_time");
         int hour = time.substring(0, time.indexOf(":")).toInt();
         int minute = time.substring(time.indexOf(":") + 1).toInt();
         bool weekday[NUMBER_OF_WEEKDAY] = {false, false, false, false, false, false, false};
+        // 同じname属性で複数の値を投げる実装になっているのでループを回して全部の引数について調査する
         for (int i = 0; i < server.args(); i++) {
             if (server.argName(i) == String("weekday")) {
                 weekday[String(server.arg(i)).toInt()] = true;
             }
         }
         events.push(function_name, event_functions[function_name], hour, minute, weekday);
+        update_request = true;
     }
 
+    // イベント削除処理
     // 同じname属性で複数の値を投げる実装になっているのでループを回して全部の引数について調査する
     for (int i = 0; i < server.args(); i++) {
         if (server.argName(i) == String("delete_index")) {
             events.erase(server.arg(i).toInt());
+            update_request = true;
         }
     }
 
-    rtc.clear();
-    std::list<Event> event_list = events.get();
-    for_each (event_list.begin(), event_list.end(), [](Event event) {
-        if (event.func != NULL) {
-            rtc.append(event.hour, event.minute, event.func);
-        }
-    });
-    rtc.ready();
+    if (update_request) {
+        rtc.clear();
+        std::list<Event> event_list = events.get();
+        for_each (event_list.begin(), event_list.end(), [](Event event) {
+            if (event.func != NULL) {
+                rtc.append(event.hour, event.minute, event.func);
+            }
+        });
+        rtc.ready();
+    }
 
     String file_path = "/events.html";
     if (!SPIFFS.exists(file_path)) {
