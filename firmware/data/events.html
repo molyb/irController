@@ -17,7 +17,7 @@
 </form>
 <hr>
 <form action="config" method="POST">
-    <p id="add_request">
+    <p>
         <label>
             <input type="time" name="register_time">
         </label>
@@ -27,6 +27,13 @@
                 <option value="autoAcOff">autoAcOff</option>
             </select>
         </label>
+        <label><input type="checkbox" name="weekday" value="0">Sun</label>
+        <label><input type="checkbox" name="weekday" value="1">Mon</label>
+        <label><input type="checkbox" name="weekday" value="2">Tue</label>
+        <label><input type="checkbox" name="weekday" value="3">Wed</label>
+        <label><input type="checkbox" name="weekday" value="4">Thur</label>
+        <label><input type="checkbox" name="weekday" value="5">Fri</label>
+        <label><input type="checkbox" name="weekday" value="6">Sat</label>
     </p>
     <p>
         <input type="submit" value="add">

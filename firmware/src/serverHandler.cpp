@@ -15,6 +15,8 @@
 const unsigned int ir_out_pin = IR_OUT_PIN;
 extern RtcEvent rtc;
 
+#define JSON_CAPACITY 2048
+
 void handleRoot(void) {
     File index = SPIFFS.open("/index.html", "r");
     if(!index) {
@@ -241,7 +243,6 @@ void handleHitachiAc(void) {
 }
 
 
-
 // 以下のようなjsonファイルを生成する事を想定している
 //{
 //    "title": "over written title",
@@ -249,63 +250,103 @@ void handleHitachiAc(void) {
 //        {
 //            "function_name": "func0",
 //            "hour": 6,
-//            "minute": 30
+//            "minute": 30,
+//            "weekday": [true, false, false, false, false, false, true]
 //        },
 //        {
 //            "function_name": "func1",
 //            "hour": 8,
-//            "minute": 0
+//            "minute": 0,
+//            "weekday": [true, true, true, true, true, true, true]
 //        }
 //    ]
 //}
-void handleConfig(void) {
+static void handleConfigGet(void) {
     SaveEvent events(&EEPROM);
-    if (server.method() == HTTP_POST) {
-        // 同じname属性で複数の値を投げる実装になっているのでループを回して全部の引数について調査する
-        for (int i = 0; i < server.args(); i++) {
-            if (server.argName(i) == String("delete_index")) {
-                events.erase(server.arg(i).toInt());
-            } else if (server.argName(i) == String("register_event")) {
-                String function_name = server.arg(i);
-                String time = server.arg("register_time");
-                int hour = time.substring(0, time.indexOf(":")).toInt();
-                int minute = time.substring(time.indexOf(":") + 1).toInt();
-                events.push(function_name, event_functions[function_name], hour, minute);
-            }
-        }
-
-        rtc.clear();
-        std::list<Event> event_list = events.get();
-        for_each (event_list.begin(), event_list.end(), [](Event event) {
-            if (event.func != NULL) {
-                rtc.append(event.hour, event.minute, event.func);
-            }
-        });
-        rtc.ready();
-
-        String file_path = "/events.html";
-        if (SPIFFS.exists(file_path)) {
-            File file = SPIFFS.open(file_path, "r");
-            server.streamFile(file, "text/html");
-            file.close();
-            return;
-        }
-    }
-
     std::list<Event> registered_events = events.get();
-    StaticJsonDocument<1024> doc;
+    DynamicJsonDocument doc(JSON_CAPACITY);
     JsonObject root = doc.to<JsonObject>();
-    root["title"] = "over written title";
+    root["title"] = "IR Controller Config";
     JsonArray event_writer = root.createNestedArray("events");
 
     for_each (registered_events.begin(), registered_events.end(), [&](Event event) {
         JsonObject event_obj = event_writer.createNestedObject();
+        if (event_obj.isNull()) {
+            Serial.println("json memory is full.");
+            return;
+        }
         event_obj["function_name"] = event.func_name;
         event_obj["hour"] = event.hour;
         event_obj["minute"] = event.minute;
+        JsonArray event_array = event_obj.createNestedArray("weekday");
+        for (bool i : event.weekday) {
+            event_array.add(i ? "true" : "false");
+        }
     });
 
     String response;
     serializeJson(doc, response);
     server.send(200, "application/json", response);
+}
+
+
+static void handleConfigPost(void) {
+    SaveEvent events(&EEPROM);
+    bool update_request = false;
+    // イベント追加処理 週の設定が無い場合は登録しない
+    if (server.hasArg("register_event") && server.hasArg("weekday")) {
+        String function_name = server.arg("register_event");
+        String time = server.arg("register_time");
+        int hour = time.substring(0, time.indexOf(":")).toInt();
+        int minute = time.substring(time.indexOf(":") + 1).toInt();
+        bool weekday[NUMBER_OF_WEEKDAY] = {false, false, false, false, false, false, false};
+        // 同じname属性で複数の値を投げる実装になっているのでループを回して全部の引数について調査する
+        for (int i = 0; i < server.args(); i++) {
+            if (server.argName(i) == String("weekday")) {
+                weekday[String(server.arg(i)).toInt()] = true;
+            }
+        }
+        events.push(function_name, event_functions[function_name], hour, minute, weekday);
+        update_request = true;
+    }
+
+    // イベント削除処理
+    // 同じname属性で複数の値を投げる実装になっているのでループを回して全部の引数について調査する
+    for (int i = 0; i < server.args(); i++) {
+        if (server.argName(i) == String("delete_index")) {
+            events.erase(server.arg(i).toInt());
+            update_request = true;
+        }
+    }
+
+    if (update_request) {
+        rtc.clear();
+        std::list<Event> event_list = events.get();
+        for_each (event_list.begin(), event_list.end(), [](Event event) {
+            if (event.func != NULL) {
+                std::array<bool, 7> weekday = {
+                        event.weekday[0], event.weekday[1], event.weekday[2], event.weekday[3],
+                        event.weekday[4], event.weekday[5], event.weekday[6]};
+                rtc.append(event.hour, event.minute, weekday, event.func);
+            }
+        });
+        rtc.ready();
+    }
+
+    String file_path = "/events.html";
+    if (!SPIFFS.exists(file_path)) {
+        return handleConfigGet();
+    }
+    File file = SPIFFS.open(file_path, "r");
+    server.streamFile(file, "text/html");
+    file.close();
+}
+
+
+void handleConfig(void) {
+    if (server.method() == HTTP_POST) {
+        return handleConfigPost();
+    } else {
+        return handleConfigGet();
+    }
 }

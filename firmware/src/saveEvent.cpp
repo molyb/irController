@@ -57,12 +57,12 @@ bool SaveEvent::erase(uint16_t registered_event_index) {
 }
 
 
-bool SaveEvent::push(String func_name, void (*func)(void), uint8_t hour, uint8_t minute) {
+bool SaveEvent::push(String func_name, void (*func)(void), uint8_t hour, uint8_t minute, bool* weekday) {
     for (uint16_t i = 0; i < save_event_max_; i++) {
         Event event;
         eeprom_->get<Event>(SAVE_EVENT_EVENT_BASE_ADDRESS + sizeof(Event) * i, event);
         if (event.func == NULL) {
-            save(i, func_name, func, hour, minute);
+            save(i, func_name, func, hour, minute, weekday);
             return true;
         }
     }
@@ -116,11 +116,14 @@ bool SaveEvent::eraseInternalIndex(uint16_t index) {
 }
 
 
-void SaveEvent::save(uint16_t index, String func_name, void (*func)(void), uint8_t hour, uint8_t minute) {
+void SaveEvent::save(uint16_t index, String func_name, void(*func)(void), uint8_t hour, uint8_t minute, bool* weekday) {
     Event event;
     initEvent(event);
     event.hour = hour;
     event.minute = minute;
+    for (uint8_t i = 0; i < NUMBER_OF_WEEKDAY; i++) {
+        event.weekday[i] = weekday[i];
+    }
     // コピー範囲がMAX-2になっているのはインデックス値調整と最後の1バイトを\0にするため
     for (size_t i = 0; i < func_name.length() && i < SAVE_EVENT_FUNC_NAME_LEN - 2; i++) {
         event.func_name[i] = func_name.charAt(i);

@@ -86,14 +86,18 @@ void setup() {
         events.eraseAll();
         Serial.println("eeprom is erased all.");
         Serial.println("register default events.");
-        events.push("autoAcOn", event_functions["autoAcOn"], 6, 30);
-        events.push("autoAcOff", event_functions["autoAcOff"], 8, 00);
-        events.push("autoAcOn", event_functions["autoAcOn"], 18, 30);
+        bool weekday[NUMBER_OF_WEEKDAY] = {false, true, true, true, true, true, false};
+        events.push("autoAcOn", event_functions["autoAcOn"], 6, 30, weekday);
+        events.push("autoAcOff", event_functions["autoAcOff"], 8, 00, weekday);
+        events.push("autoAcOn", event_functions["autoAcOn"], 18, 30, weekday);
     }
     std::list<Event> event_list = events.get();
     for_each (event_list.begin(), event_list.end(), [](Event event) {
         if (event.func != NULL) {
-            rtc.append(event.hour, event.minute, event.func);
+            std::array<bool, 7> weekday = {
+                    event.weekday[0], event.weekday[1], event.weekday[2], event.weekday[3],
+                    event.weekday[4], event.weekday[5], event.weekday[6]};
+            rtc.append(event.hour, event.minute, weekday, event.func);
         }
     });
     rtc.ready();
