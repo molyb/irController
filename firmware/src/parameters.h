@@ -1,7 +1,3 @@
-//
-// Created by newrs on 2020/05/24.
-//
-
 #ifndef FIRMWARE_PARAMETERS_H
 #define FIRMWARE_PARAMETERS_H
 

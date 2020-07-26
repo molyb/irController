@@ -1,7 +1,3 @@
-//
-// Created by newrs on 2020/06/15.
-//
-
 #include "saveEvent.h"
 
 #define SAVE_EVENT_MEM_SIZE 1024
