@@ -71,11 +71,9 @@ bool RtcEvent::ready(void) {
         // 未発火イベントが残ると困るのでデタッチの後にリターン処理
         return false;
     }
-    time_t current_time;
-    struct tm *current_tm;
 
-    current_time = time(NULL);
-    current_tm = localtime(&current_time);
+    time_t current_time = time(NULL);;
+    struct tm *current_tm = localtime(&current_time);
 
     double tick_sec = 0;
     uint8_t daily_counter = 0;
@@ -93,7 +91,8 @@ bool RtcEvent::ready(void) {
             // この時点では曜日については考慮しない。ループの外でつじつまを合わせる
             double tick_min = (event.hour_24 * 60 + event.minute) - (current_tm->tm_hour * 60 + current_tm->tm_min);
             tick_sec = tick_min * 60;
-            if (0 < tick_sec) {
+            // イベントは登録時に時間の降順でソートしているので、翌日以降であれば最初に発見したイベントが対象
+            if (0 < daily_counter || 0 < tick_sec) {
                 is_detected = true;
                 callback_ = event.func;
                 break;
