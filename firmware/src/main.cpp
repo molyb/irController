@@ -78,7 +78,7 @@ void setup() {
     event_functions.insert(std::make_pair("autoAcOn", autoAcOn));
     event_functions.insert(std::make_pair("autoAcOff", autoAcOff));
 
-//    uploader.enable(ambient_channel_id, ambient_write_key, AMBIENT_UPDATE_INTERVAL_SEC);
+    uploader.enable(ambient_channel_id, ambient_write_key, AMBIENT_UPDATE_INTERVAL_SEC);
     EEPROM.begin(1024);
     SaveEvent events(&EEPROM);
 

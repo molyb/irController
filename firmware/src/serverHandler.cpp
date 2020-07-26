@@ -79,14 +79,14 @@ void handleTemperature(void) {
 
 
 void handleLight(void) {
-    File index = SPIFFS.open("/light.html", "r");
-    if(!index) {
+    File file = SPIFFS.open("/light.html", "r");
+    if(!file) {
         Serial.println("Fail: load light.html");
         handleNotFound();
         return;
     }
-    String html = index.readString();
-    index.close();
+    String html = file.readString();
+    file.close();
 
     const uint64_t irPatternNecLightOn = 0x41B6659A;
     const uint64_t irPatternNecLightNight = 0x41b63dc2;
@@ -105,17 +105,14 @@ void handleLight(void) {
     };
     __unused enum State state = unknown;
     //  LED の制御(server.method()でメソッドごとの処理を切り替えられるが今は同じにしておく)
-    String val = server.arg("light");
+    String val = server.arg("cmd");
     if (val == "on") {
-        Serial.println("debug: on");
         irsend.sendNEC(irPatternNecLightOn, irPatternBitsLightOn);
         state = on;
     } else if (val == "night") {
-        Serial.println("debug: night");
         irsend.sendNEC(irPatternNecLightNight, irPatternBitsLightNight);
         state = night;
     } else if (val == "off") {
-        Serial.println("debug: off");
         irsend.sendNEC(irPatternNecLightOff, irPatternBitsLightOff);
         state = off;
     } else {
@@ -233,6 +230,9 @@ void handleHitachiAc(void) {
 
     String state = ac.toString();
     body += "<p>" + state + "</p>\n";
+    body += "<p>"
+            "    <a href= \"index.html\">Top Page</a>"
+            "</p>";
     body += "</body>\n";
 
     String footer = "</html>\n";

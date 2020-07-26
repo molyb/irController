@@ -1,7 +1,3 @@
-//
-// Created by newrs on 2020/06/15.
-//
-
 #ifndef FIRMWARE_SAVEEVENT_H
 #define FIRMWARE_SAVEEVENT_H
 
