@@ -324,7 +324,10 @@ static void handleConfigPost(void) {
         std::list<Event> event_list = events.get();
         for_each (event_list.begin(), event_list.end(), [](Event event) {
             if (event.func != NULL) {
-                rtc.append(event.hour, event.minute, event.func);
+                std::array<bool, 7> weekday = {
+                        event.weekday[0], event.weekday[1], event.weekday[2], event.weekday[3],
+                        event.weekday[4], event.weekday[5], event.weekday[6]};
+                rtc.append(event.hour, event.minute, weekday, event.func);
             }
         });
         rtc.ready();

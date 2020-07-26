@@ -1,5 +1,6 @@
 #include "RtcEvent.h"
 #include "Arduino.h"
+#include <algorithm>
 
 // struct *tm->tm_year に1以下を入れるとmktime結果がバグるので
 // 適当に2000年（1900 + 100）を基準にしておく
@@ -18,33 +19,40 @@ RtcEvent::RtcEvent(void) {
 
 
 void RtcEvent::clear(void) {
-    times_.clear();
+    for (std::list<RtcEventData> times : times_) {
+        times.clear();
+    }
 }
 
 
-bool RtcEvent::append(uint8_t hour_24, uint8_t minute, std::function<void(void)> callback) {
+bool RtcEvent::append(uint8_t hour_24, uint8_t minute, std::array<bool, 7> weekday,
+        std::function<void(void)> callback) {
     if (23 < hour_24 || 59 < minute) {
         return false;
     }
-    time_t event_time = 0;
-    struct tm *show_tm = localtime(&event_time);
-    show_tm->tm_year = ESCAPE_BUG_MKTIME_OFFSET;
-    show_tm->tm_mon = 0;
-    show_tm->tm_mday = 1;
-    show_tm->tm_hour = hour_24;
-    show_tm->tm_min = minute;
-    event_time = mktime(show_tm);
 
-    auto itr = times_.begin();
-    // 時間で降順になるようにitrを移動
-    while (itr != times_.end()) {
-        if (0 < difftime(itr->first, event_time)) {
-            break;
+    RtcEventData event;
+    event.hour_24 = hour_24;
+    event.minute = minute;
+    event.func = callback;
+
+    uint16_t new_time = event.hour_24 * 60 + event.minute;
+    for (uint8_t weekday_index = 0; weekday_index < (uint8_t)times_.size(); weekday_index++) {
+        if (!weekday[weekday_index]) {
+            continue;
         }
-        itr++;
+        std::list<RtcEventData> weekday_data = times_[weekday_index];
+        auto time_itr = weekday_data.begin();
+        // 時間で降順になるようにitrを移動
+        while (time_itr != weekday_data.end()) {
+            uint16_t target_time = time_itr->hour_24 * 60 + time_itr->minute;
+            if (new_time < target_time) {
+                break;
+            }
+            time_itr++;
+        }
+        weekday_data.insert(time_itr, event);
     }
-    std::pair<time_t, std::function<void(void)>> event(event_time, callback);
-    times_.insert(itr, event);
     return true;
 }
 
@@ -52,8 +60,11 @@ bool RtcEvent::append(uint8_t hour_24, uint8_t minute, std::function<void(void)>
 bool RtcEvent::ready(void) {
     // イベントの削除処理後にも本関数が呼ばれるためtimes_が空かに依らずでタッチしておく
     ticker_.detach();
-    if (times_.empty()) {
-        return false;
+    // 全ての週でイベントが空だったらリターン　未発火イベントが残ると困るのでデタッチの後にリターン処理
+    for (std::list<RtcEventData> eventsEachWeek : times_) {
+        if (eventsEachWeek.empty()) {
+            return false;
+        }
     }
 
     time_t current_time;
@@ -61,34 +72,49 @@ bool RtcEvent::ready(void) {
 
     current_time = time(NULL);
     current_tm = localtime(&current_time);
-    current_tm->tm_year = ESCAPE_BUG_MKTIME_OFFSET;
-    current_tm->tm_mon = 0;
-    current_tm->tm_mday = 1;
-    current_time = mktime(current_tm);
 
-    auto itr = times_.begin();
     double tick_sec = 0;
-    while (itr != times_.end()) {
-        tick_sec = difftime(itr->first, current_time);
-        if (0 < tick_sec) {
-            Serial.print("tick_sec: ");
-            Serial.println(tick_sec);
+    uint8_t daily_counter = 0;
+
+    bool is_detected = false;
+    std::function<void(void)>  detected_function;
+    // 変数iは単純に一週間7日分をループさせるためだけの変数
+    // 実際に変数にアクセスする際には変数indexを用いる
+    uint8_t index = current_tm->tm_wday;
+    for (uint8_t i = 0; i < 7; i++) {
+        std::list<RtcEventData> today_event = times_[index];
+        // 現在、各曜日のイベントを降順にサーチしていくので見つけるのが遅いかもしれないが
+        // 家庭内で数人で使用する際に問題になる事はないので安易な実装でいく
+        for (const RtcEventData &event : today_event) {
+            // この時点では曜日については考慮しない。ループの外でつじつまを合わせる
+            double tick_min = (event.hour_24 * 60 + event.minute) - (current_tm->tm_hour * 60 + current_tm->tm_min);
+            tick_sec = tick_min * 60;
+            if (0 < tick_sec) {
+                Serial.print("tick_sec: ");
+                Serial.println(tick_sec);
+                is_detected = true;
+                callback_ = event.func;
+                break;
+            }
+        }
+        if (is_detected) {
             break;
         }
-        itr++;
-    }
-    // その日のスケジュールが全て終了していた場合
-    if (itr == times_.end()) {
-        time_t tomorrow_event = times_.begin()->first;
-        struct tm *tomorrow_tm = localtime(&tomorrow_event);
-        tomorrow_tm->tm_mday += 1;
-        tomorrow_event = mktime(tomorrow_tm);
-        tick_sec = difftime(tomorrow_event, current_time);
-        Serial.print("tomorrow_tick_sec: ");
-        Serial.println(tick_sec);
-    }
 
-    callback_ = itr->second;
+        // 次の曜日のサーチに入るための準備
+        auto incrementWeekdayIndex = [](int current_index) {
+            current_index++;
+            if (7 <= current_index) {
+                current_index = 0;
+            }
+            return current_index;
+        };
+        index = incrementWeekdayIndex(index);
+        daily_counter++;
+    }
+    // ここまでtick_secでは日付を考慮していなかったのでここでつじつま合わせ
+    tick_sec = (daily_counter * 24 * 60 * 60) + tick_sec;
+
     if ((CALLBACK_RELAY_INTERVAL_SEC + CALLBACK_RELAY_OFFSET_SEC) < tick_sec) {
         ticker_.once_scheduled(CALLBACK_RELAY_INTERVAL_SEC, std::bind(&RtcEvent::callbackRelay, this));
     } else {
@@ -111,16 +137,5 @@ void RtcEvent::callbackAgent(void) {
         callback_ = NULL;
     }
     ready();  // 次回用に再度設定
-}
-
-
-std::pair<time_t, std::function<void(void)>> RtcEvent::isAppended(uint8_t index) {
-    auto itr = times_.begin();
-    uint8_t i = index;
-    while (0 < i) {
-        itr++;
-        i--;
-    }
-    return *itr;
 }
 
