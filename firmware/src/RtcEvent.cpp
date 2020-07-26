@@ -19,7 +19,7 @@ RtcEvent::RtcEvent(void) {
 
 
 void RtcEvent::clear(void) {
-    for (std::list<RtcEventData> times : times_) {
+    for (std::list<RtcEventData> &times : times_) {
         times.clear();
     }
 }
@@ -41,17 +41,17 @@ bool RtcEvent::append(uint8_t hour_24, uint8_t minute, std::array<bool, 7> weekd
         if (!weekday[weekday_index]) {
             continue;
         }
-        std::list<RtcEventData> weekday_data = times_[weekday_index];
-        auto time_itr = weekday_data.begin();
+        std::list<RtcEventData> &event_of_weekday = times_.at(weekday_index);
+        auto time_itr = event_of_weekday.begin();
         // 時間で降順になるようにitrを移動
-        while (time_itr != weekday_data.end()) {
+        while (time_itr != event_of_weekday.end()) {
             uint16_t target_time = time_itr->hour_24 * 60 + time_itr->minute;
             if (new_time < target_time) {
                 break;
             }
             time_itr++;
         }
-        weekday_data.insert(time_itr, event);
+        event_of_weekday.insert(time_itr, event);
     }
     return true;
 }
@@ -60,13 +60,17 @@ bool RtcEvent::append(uint8_t hour_24, uint8_t minute, std::array<bool, 7> weekd
 bool RtcEvent::ready(void) {
     // イベントの削除処理後にも本関数が呼ばれるためtimes_が空かに依らずでタッチしておく
     ticker_.detach();
-    // 全ての週でイベントが空だったらリターン　未発火イベントが残ると困るのでデタッチの後にリターン処理
-    for (std::list<RtcEventData> eventsEachWeek : times_) {
-        if (eventsEachWeek.empty()) {
-            return false;
+    // 全ての週でイベントが空だったらリターン
+    bool is_empty = true;
+    for (std::list<RtcEventData> events_each_weekday : times_) {
+        if (!events_each_weekday.empty()) {
+            is_empty = false;
         }
     }
-
+    if (is_empty) {
+        // 未発火イベントが残ると困るのでデタッチの後にリターン処理
+        return false;
+    }
     time_t current_time;
     struct tm *current_tm;
 
@@ -82,7 +86,7 @@ bool RtcEvent::ready(void) {
     // 実際に変数にアクセスする際には変数indexを用いる
     uint8_t index = current_tm->tm_wday;
     for (uint8_t i = 0; i < 7; i++) {
-        std::list<RtcEventData> today_event = times_[index];
+        std::list<RtcEventData> today_event = times_.at(index);
         // 現在、各曜日のイベントを降順にサーチしていくので見つけるのが遅いかもしれないが
         // 家庭内で数人で使用する際に問題になる事はないので安易な実装でいく
         for (const RtcEventData &event : today_event) {
@@ -90,8 +94,6 @@ bool RtcEvent::ready(void) {
             double tick_min = (event.hour_24 * 60 + event.minute) - (current_tm->tm_hour * 60 + current_tm->tm_min);
             tick_sec = tick_min * 60;
             if (0 < tick_sec) {
-                Serial.print("tick_sec: ");
-                Serial.println(tick_sec);
                 is_detected = true;
                 callback_ = event.func;
                 break;
@@ -113,7 +115,9 @@ bool RtcEvent::ready(void) {
         daily_counter++;
     }
     // ここまでtick_secでは日付を考慮していなかったのでここでつじつま合わせ
-    tick_sec = (daily_counter * 24 * 60 * 60) + tick_sec;
+    tick_sec = ((double)daily_counter * 24. * 60. * 60.) + tick_sec;
+    Serial.print("tick_sec: ");
+    Serial.println(tick_sec);
 
     if ((CALLBACK_RELAY_INTERVAL_SEC + CALLBACK_RELAY_OFFSET_SEC) < tick_sec) {
         ticker_.once_scheduled(CALLBACK_RELAY_INTERVAL_SEC, std::bind(&RtcEvent::callbackRelay, this));
