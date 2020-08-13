@@ -135,23 +135,13 @@ void handleLight(void) {
     server.send(200, "text/html", html);
 }
 
-void handleHitachiAc(void) {
+
+// swingは実装の手間と実用面を考慮してサポートしない
+// IRremoteESP8266ライブラリのIRHitachiAc424メンバ関数setSwingVToggleコメントを参照
+static void controlAc(const String& power, const String& operation_mode, const String& temp,
+        const String& fan, const String& swing) {
     IRHitachiAc424 ac(ir_out_pin);
     ac.begin();
-
-    String power = "off";
-    String operation_mode = "fan";
-    String temp = "22";
-    String fan = "auto";
-    String swing = "off";
-
-    power = server.arg("power");
-    operation_mode = server.arg("mode");
-    temp = server.arg("temp");
-    fan = server.arg("fan");
-    // swingは実装の手間と実用面を考慮してサポートしない
-    // IRremoteESP8266ライブラリのIRHitachiAc424メンバ関数setSwingVToggleコメントを参照
-    // swing = server.arg("swing");
 
     if (power == "on") {
         ac.on();
@@ -186,60 +176,38 @@ void handleHitachiAc(void) {
     }
     ac.setButton(kHitachiAc424ButtonPowerMode);
     ac.send();
+}
 
-    String header = "\
-<html lang=\"ja\">\n\
-    <meta charset=\"utf-8\">\n\
-    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n\
-    <head>\n\
-        <title>IrController</title>\n\
-    </head>\n";
 
-    String body = "\
-<body style=\"font-family: sans-serif; background-color: #ffffff;\" >\n\
-    <h1>Hitachi AC Controller</h1>\n\
-    <p>\
-    <form>\
-        <p> Power\
-            <select name=\"power\">\
-                <option value=\"on\">On</option>\
-                <option value=\"off\">Off</option>\
-            </select>\
-        </p>\
-        <p> Mode\
-            <select name=\"mode\">\
-                <option value=\"fan\">Fan</option>\
-                <option value=\"dry\">Dry</option>\
-                <option value=\"cool\">Cool</option>\
-                <option value=\"heat\">Heat</option>\
-            </select>\
-        </p>\
-        <p> Temperature\
-            <input type=\"number\" name=\"temp\" value=\"27\">\
-        </p>\
-        <p> Fan\
-            <select name=\"fan\">\
-                <option value=\"low\">Low</option>\
-                <option value=\"mid\">Mid</option>\
-                <option value=\"high\">High</option>\
-            </select>\
-        </p>\
-        <input type=\"submit\" value=\"Submit\" />\
-    </form>\
-    </p>\n";
+void handleHitachiAc(void) {
+    String power = "off";
+    String operation_mode = "fan";
+    String temp = "22";
+    String fan = "auto";
+    String swing = "off";
 
-    String state = ac.toString();
-    body += "<p>" + state + "</p>\n";
-    body += "<p>"
-            "    <a href= \"index.html\">Top Page</a>"
-            "</p>";
-    body += "</body>\n";
+    power = server.arg("power");
+    operation_mode = server.arg("mode");
+    temp = server.arg("temp");
+    fan = server.arg("fan");
+    // swing = server.arg("swing");
 
-    String footer = "</html>\n";
-    String message = header + body + footer;
+    // この判定処理が無いと設定のためにページひらいただけでエアコンが動作してしまう
+    if (power == "on" || power == "off") {
+        controlAc(power, operation_mode, temp, fan, swing);
+    }
+
+    File file = SPIFFS.open("/hitachiAC.html", "r");
+    if(!file) {
+        Serial.println("Fail: load hitachiAC.html");
+        handleNotFound();
+        return;
+    }
+    String html = file.readString();
+    file.close();
 
     // HTTPステータスコード(200) リクエストの成功
-    server.send(200, "text/html", message);
+    server.send(200, "text/html", html);
 }
 
 
