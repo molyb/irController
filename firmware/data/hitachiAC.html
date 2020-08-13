@@ -1,5 +1,22 @@
 <!DOCTYPE html>
 <html lang="ja">
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+
+<script>
+    $(function() {
+        $.ajax({
+            type:     'GET',
+            url:      'hitachi-ac?ctrl=get_config',
+            dataType: 'text',
+        }).done(function (data) {
+            $('#ac_current_config').append(data);
+        }).fail(function(jqxhr, status, error) {
+            alert(status + " : " + error);
+        });
+    });
+</script>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -38,6 +55,8 @@
         <input type="submit" value="Submit">
     </p>
 </form>
+
+<p id="ac_current_config"></p>
 
 <p>
     <a href= "index.html">Top Page</a>

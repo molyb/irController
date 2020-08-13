@@ -138,9 +138,8 @@ void handleLight(void) {
 
 // swingは実装の手間と実用面を考慮してサポートしない
 // IRremoteESP8266ライブラリのIRHitachiAc424メンバ関数setSwingVToggleコメントを参照
-static void controlAc(const String& power, const String& operation_mode, const String& temp,
+static void controlAc(IRHitachiAc424& ac, const String& power, const String& operation_mode, const String& temp,
         const String& fan, const String& swing) {
-    IRHitachiAc424 ac(ir_out_pin);
     ac.begin();
 
     if (power == "on") {
@@ -180,6 +179,13 @@ static void controlAc(const String& power, const String& operation_mode, const S
 
 
 void handleHitachiAc(void) {
+    static IRHitachiAc424 ac(ir_out_pin);
+    // ctrlはエアコン制御では無くチップの制御用引数
+    if (server.arg("ctrl") == "get_config") {
+        server.send(200, "text/plain", ac.toString());
+        return ;
+    }
+
     String power = "off";
     String operation_mode = "fan";
     String temp = "22";
@@ -194,7 +200,7 @@ void handleHitachiAc(void) {
 
     // この判定処理が無いと設定のためにページひらいただけでエアコンが動作してしまう
     if (power == "on" || power == "off") {
-        controlAc(power, operation_mode, temp, fan, swing);
+        controlAc(ac, power, operation_mode, temp, fan, swing);
     }
 
     File file = SPIFFS.open("/hitachiAC.html", "r");
