@@ -5,7 +5,7 @@
 #include <IRremoteESP8266.h>
 #include <IRsend.h>
 #include <IRrecv.h>
-#include <ir_hitachi.h>
+#include <ir_Hitachi.h>
 #include <ArduinoJson.h>
 #include "parameters.h"
 #include "saveEvent.h"
