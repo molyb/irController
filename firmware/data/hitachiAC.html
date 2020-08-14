@@ -4,16 +4,37 @@
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 
 <script>
-    $(function() {
+    function getConfig() {
         $.ajax({
-            type:     'GET',
-            url:      'hitachi-ac?ctrl=get_config',
+            type: 'GET',
+            url: 'hitachi-ac?ctrl=get_config',
             dataType: 'text',
         }).done(function (data) {
-            $('#ac_current_config').append(data);
-        }).fail(function(jqxhr, status, error) {
+            const conf = $('#ac_current_config');
+            conf.empty();
+            conf.append(data);
+        }).fail(function (jqxhr, status, error) {
             alert(status + " : " + error);
         });
+    }
+
+     $(function() {
+        getConfig();
+        $("#submit_config").on('click', function () {
+            console.log("call");
+            const elem = document.forms["config_form"];
+            console.log($(elem).serialize());
+            $.ajax({
+                type: 'POST',
+                url: 'hitachi-ac',
+                data: $(elem).serialize()
+            }).done(function (data) {
+                console.log("success");
+                getConfig();
+            }).fail(function(jqxhr, status, error) {
+                console.log("fail");
+            });
+        })
     });
 </script>
 
@@ -26,7 +47,7 @@
 <body>
 <h1>Hitachi AC Controller</h1>
 
-<form>
+<form name="config_form" method="post" action="">
     <p>
         <label> Power
             <select name="power">
@@ -52,9 +73,13 @@
                 <option value="high">High</option>
             </select>
         </label> <br>
-        <input type="submit" value="Submit">
+
     </p>
 </form>
+
+<p>
+    <button id="submit_config">Submit</button>
+</p>
 
 <p id="ac_current_config"></p>
 
