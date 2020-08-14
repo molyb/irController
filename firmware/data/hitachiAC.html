@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hitachi AC</title>
+    <script src="js/jquery-3.5.1.min.js"></script>
+</head>
+
+<body>
+<h1>Hitachi AC Controller</h1>
+
+<form name="config_form" method="post" action="">
+    <p>
+        <label> Power
+            <select name="power">
+                <option value="on">On</option>
+                <option value="off">Off</option>
+            </select>
+        </label> <br>
+        <label> Mode
+            <select name="mode">
+                <option value="fan">Fan</option>
+                <option value="dry">Dry</option>
+                <option value="cool">Cool</option>
+                <option value="heat">Heat</option>
+            </select>
+        </label> <br>
+        <label> Temperature
+            <input type="number" name="temp" value="27">
+        </label> <br>
+        <label> Fan
+            <select name="fan">
+                <option value="low">Low</option>
+                <option value="mid">Mid</option>
+                <option value="high">High</option>
+            </select>
+        </label> <br>
+
+    </p>
+</form>
+
+<p>
+    <button id="submit_config">Submit</button>
+</p>
+
+<p id="ac_current_config"></p>
+
+<p>
+    <a href= "index.html">Top Page</a>
+</p>
+
+<script>
+    function getConfig() {
+        $.ajax({
+            type: 'GET',
+            url: 'hitachi-ac?ctrl=get_config',
+            dataType: 'text',
+        }).done(function (data) {
+            const conf = $('#ac_current_config');
+            conf.empty();
+            conf.append(data);
+        }).fail(function (jqxhr, status, error) {
+            alert(status + " : " + error);
+        });
+    }
+
+    $(function() {
+        getConfig();
+        $("#submit_config").on('click', function () {
+            console.log("call");
+            const elem = document.forms["config_form"];
+            console.log($(elem).serialize());
+            $.ajax({
+                type: 'POST',
+                url: 'hitachi-ac',
+                data: $(elem).serialize()
+            }).done(function (data) {
+                console.log("success");
+                getConfig();
+            }).fail(function(jqxhr, status, error) {
+                console.log("fail");
+            });
+        })
+    });
+</script>
+
+</body>
+</html>
