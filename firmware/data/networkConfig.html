@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Network Configuration</title>
+</head>
+<body>
+<h1>Network Configuration</h1>
+
+<form name="config_form" method="post" action="">
+    <p>
+        <label> SSID
+            <input type="text" name="ssid">
+        </label> <br>
+        <label> Password
+            <input type="password" name="password">
+        </label>
+    </p>
+</form>
+<p>
+    <button id="submit_config">Save</button>
+</p>
+
+</body>
+<script>
+    $(function() {
+        $("#submit_config").on('click', function () {
+            const elem = document.forms["config_form"];
+            console.log($(elem).serialize());
+            $.ajax({
+                type: 'POST',
+                url: 'config',
+                data: $(elem).serialize()
+            }).done(function (data) {
+                console.log("success");
+                getConfig();
+            }).fail(function(jqxhr, status, error) {
+                console.log("fail");
+            });
+        })
+    });
+</script>
+</html>
