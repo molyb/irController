@@ -7,7 +7,7 @@
 <body>
 <h1>Network Configuration</h1>
 
-<form name="config_form" method="post" action="">
+<form name="config_form" method="post" action="network-config">
     <p>
         <label> SSID
             <input type="text" name="ssid">
@@ -16,28 +16,10 @@
             <input type="password" name="password">
         </label>
     </p>
+    <p>
+        <button id="submit_config">Save</button>
+    </p>
 </form>
-<p>
-    <button id="submit_config">Save</button>
-</p>
-
 </body>
-<script>
-    $(function() {
-        $("#submit_config").on('click', function () {
-            const elem = document.forms["config_form"];
-            console.log($(elem).serialize());
-            $.ajax({
-                type: 'POST',
-                url: 'config',
-                data: $(elem).serialize()
-            }).done(function (data) {
-                console.log("success");
-                getConfig();
-            }).fail(function(jqxhr, status, error) {
-                console.log("fail");
-            });
-        })
-    });
-</script>
+
 </html>
