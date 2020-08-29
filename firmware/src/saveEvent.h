@@ -5,9 +5,8 @@
 #include <EEPROM.h>
 #include <list>
 
-#define SAVE_EVENT_NUMBER_OF_DATA_ADDRESS 0x00  // 4 byte
-#define SAVE_EVENT_CHECKSUM_ADDRESS       0x04  // 4 byte
-#define SAVE_EVENT_EVENT_BASE_ADDRESS     0x10
+#define SAVE_EVENT_CHECKSUM_ADDRESS       0x80  // 4 byte
+#define SAVE_EVENT_EVENT_BASE_ADDRESS     0x90
 #define SAVE_EVENT_FUNC_NAME_LEN          20
 
 #define NUMBER_OF_WEEKDAY 7
