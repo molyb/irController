@@ -9,14 +9,12 @@
 #include "Uploader.h"
 #include "RtcEvent.h"
 #include "saveEvent.h"
-
+#include "saveNetworkConfig.h"
 
 #define JST (3600 * 9)
 #define AMBIENT_UPDATE_INTERVAL_SEC (5 * 60)
 
 
-extern const char *ssid;
-extern const char *password;
 extern unsigned int ambient_channel_id;
 extern const char *ambient_write_key;
 
@@ -30,9 +28,12 @@ static Uploader uploader(&monitor, &client);
 void setupOperationMode(void) {
     Serial.begin(115200);
     Serial.println("\nwakeup in normal mode.");
-    // WIFI_AP, WIFI_STA, WIFI_AP_STA or WIFI_OFF
+
+    EEPROM.begin(1024);
+    SaveNetworkConfig network(&EEPROM);
+
     WiFi.mode(WIFI_STA);
-    WiFi.begin(ssid, password);
+    WiFi.begin(network.ssid(), network.password());
 
     Serial.print("\n");
     while (WiFi.status() != WL_CONNECTED) {
