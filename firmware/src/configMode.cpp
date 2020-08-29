@@ -12,7 +12,7 @@ static DNSServer dnsServer;
 static ESP8266WebServer config_server(80);
 
 
-void saveHandler() {
+void handleNetworkConfig() {
 
 }
 
@@ -20,6 +20,7 @@ void saveHandler() {
 void setupConfigMode(void) {
     Serial.begin(115200);
     Serial.println("\nwakeup in config mode.");
+    SPIFFS.begin();
 
     WiFi.mode(WIFI_AP);
     WiFi.softAPConfig(apIP, apIP, IPAddress(255, 255, 255, 0));
@@ -34,11 +35,16 @@ void setupConfigMode(void) {
     });
 
     config_server.on("/", [&]() {
-        const String response = "test page";
-        config_server.send(200,"text/plain", response);
+        String path = "/networkConfig.html";
+        if (SPIFFS.exists(path)) {
+            File file = SPIFFS.open(path, "r");
+            config_server.streamFile(file, "text/html");
+        } else {
+            config_server.send(404, "text/plain", "File Not Found!!\n");
+        }
     });
 
-    config_server.on("/save", saveHandler);
+    config_server.on("/network-config", handleNetworkConfig);
 
     config_server.begin();
 }
