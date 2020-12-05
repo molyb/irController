@@ -19,13 +19,7 @@ void acNotification(bool power, uint8_t mode, uint8_t temperature) {
     return;
 }
 
-
-void autoAcOn(void) {
-    float temp = monitor.temperature();
-    // 現時点では冷房のみ対応
-    if (temp < 30.) {
-        return;
-    }
+static void acOnCool(void) {
     IRHitachiAc424 ac(IR_OUT_PIN);
     uint8_t target_temp = 28;
     ac.begin();
@@ -37,6 +31,31 @@ void autoAcOn(void) {
     ac.send();
     Serial.println(ac.toString());
     acNotification(true, kHitachiAc424Cool, target_temp);
+}
+
+static void acOnHeat(void) {
+    IRHitachiAc424 ac(IR_OUT_PIN);
+    uint8_t target_temp = 20;
+    ac.begin();
+    ac.on();
+    ac.setMode(kHitachiAc424Heat);
+    ac.setTemp(target_temp);
+    ac.setFan(kHitachiAc424FanAuto);
+    ac.setButton(kHitachiAc424ButtonPowerMode);
+    ac.send();
+    Serial.println(ac.toString());
+    acNotification(true, kHitachiAc424Heat, target_temp);
+}
+
+void autoAcOn(void) {
+    float temp = monitor.temperature();
+    if (temp <= 17.5) {
+        acOnHeat();
+    } else if (30. <= temp) {
+        acOnCool();
+    } else {
+        return;
+    }
 }
 
 void autoAcOff(void) {
